@@ -1,20 +1,42 @@
 package org.codymalcolm;
 
-import javafx.scene.input.MouseEvent;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+
 
 public class Controller {
-    FileSharerClient client;
+    @FXML
+    private Label localDirectory;
 
-    public void upload(MouseEvent mouseEvent) {
-        client.requestUpload();
+    private FileSharerClient client = null;
+    private String selectedFilename = null;
+    private boolean localFile = false;
+    private boolean serverFile = false;
+
+    public void initialize() {
+        selectedFilename = localDirectory.getText() + "test.txt";
     }
 
-    public void download(MouseEvent mouseEvent) {
+    public void upload(ActionEvent actionEvent) {
+        System.out.println(1);
+        localFile = true;
+        if (null != selectedFilename && localFile) {
+            System.out.println(2);
+            client.requestUpload(selectedFilename);
+        }
+    }
+
+    public void download(ActionEvent actionEvent) {
         client.requestDownload();
     }
 
-    public void dir(MouseEvent mouseEvent) {
+    public void dir(ActionEvent actionEvent) {
         client.requestDirectory();
+    }
+
+    public void delete(ActionEvent actionEvent) {
+        client.requestDelete();
     }
 
     public void setClient(FileSharerClient client) {

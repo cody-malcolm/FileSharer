@@ -12,8 +12,10 @@
     <padding>
         <Insets top="10" bottom="10" left="10" right="10" />
     </padding>
-    <Label GridPane.rowIndex="0" onMouseClicked="#upload">Upload!</Label>
-    <Label GridPane.rowIndex="1" onMouseClicked="#download">Download!</Label>
-    <Label GridPane.rowIndex="2" onMouseClicked="#dir">Dir!</Label>
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="0" onAction="#upload">Upload!</Button>
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="1" onAction="#download">Download!</Button>
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="2" onAction="#dir">Refresh!</Button>
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="3" onAction="#delete">Delete!</Button>
+    <Label fx:id="localDirectory" GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.columnSpan="4">src/main/resources/local/</Label>
 
 </GridPane>
