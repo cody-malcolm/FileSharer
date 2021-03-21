@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="org.codymalcolm.Controller"
+          prefHeight="400.0" prefWidth="600.0">
+    <padding>
+        <Insets top="10" bottom="10" left="10" right="10" />
+    </padding>
+    <Label GridPane.rowIndex="0" onMouseClicked="#upload">Upload!</Label>
+    <Label GridPane.rowIndex="1" onMouseClicked="#download">Download!</Label>
+    <Label GridPane.rowIndex="2" onMouseClicked="#dir">Dir!</Label>
+
+</GridPane>
