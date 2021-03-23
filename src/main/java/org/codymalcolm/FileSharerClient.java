@@ -44,16 +44,23 @@ public class FileSharerClient extends Application {
     }
 
     public void requestUpload(String filename) {
-        System.out.println(3);
         establishConnection();
-        System.out.println(6);
         sendRequest("UPLOAD", filename);
+        processResponse();
     }
 
     public void requestDownload() {
     }
 
     public void requestDirectory() {
+        establishConnection();
+        sendRequest("DIR");
+        processResponse();
+    }
+
+    private void sendRequest(String type) {
+        out.println(type);
+        out.flush();
     }
 
     public void requestDelete() {
@@ -74,9 +81,8 @@ public class FileSharerClient extends Application {
     private void sendRequest(String type, String filename) {
         // TODO add a code to indicate successful file read
         // TODO don't forget about host machine alias
-        System.out.println(7);
         File file = new File(filename);
-        out.print(type + " " + file.getName() + "\r\n");
+        out.println(type + " " + file.getName());
 
         // read and copy file
         try {
@@ -95,13 +101,11 @@ public class FileSharerClient extends Application {
     }
 
     private void establishConnection() {
-        System.out.println(4);
         try {
             Socket socket = new Socket(hostname, port);
 
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream());
-            System.out.println(5);
 
         } catch(IOException e) {
             e.printStackTrace();

@@ -10,14 +10,14 @@ public class FileSharerServerHandler implements Runnable {
     private Socket socket = null;
     private File directory = null;
     private BufferedReader requestInput = null;
-    private DataOutputStream responseOutput = null;
+    private PrintWriter responseOutput = null;
 
     public FileSharerServerHandler(Socket socket, File directory) throws IOException {
         this.socket = socket;
         this.directory = directory;
 
         requestInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        responseOutput = new DataOutputStream(socket.getOutputStream());
+        responseOutput = new PrintWriter(socket.getOutputStream());
     }
 
     public void run() {
@@ -40,8 +40,8 @@ public class FileSharerServerHandler implements Runnable {
 
     private void handleRequest(String request) throws IOException {
         try {
-            if (request.regionMatches(true, 0, "dir ", 0, 4)) {
-                sendResponse("200", "Request to get dir".getBytes());
+            if (request.regionMatches(true, 0, "dir", 0, 3)) {
+                handleDir();
             } else if (request.regionMatches(true, 0, "upload ", 0, 7)) {
                 handleUpload(request);
             } else if (request.regionMatches(true, 0, "download  ", 0, 9)) {
@@ -52,6 +52,20 @@ public class FileSharerServerHandler implements Runnable {
             }
 
         } catch(NoSuchElementException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleDir() {
+        String responseCode = "201";
+        String[] contents = directory.list();
+        String content = "";
+        for (String c : contents) {
+            content += c + "\r\n";
+        }
+        try {
+            sendResponse(responseCode, content);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -74,19 +88,20 @@ public class FileSharerServerHandler implements Runnable {
             PrintWriter output = new PrintWriter(filename);
             String line = null;
             try {
-                while (null != (line = requestInput.readLine())) {
+                while (requestInput.ready() && null != (line = requestInput.readLine())) {
                     output.println(line);
-                    output.flush();
                 }
             } catch(IOException e) {
                 e.printStackTrace();
             } finally {
+                output.flush();
                 output.close();
             }
         } catch(IOException e) {
             e.printStackTrace();
             System.out.println("An error occurred when creating file named " + filename + " on the server-side");
         }
+        handleDir();
     }
 
     private String incrementIteration(String oldFilename) {
@@ -112,20 +127,15 @@ public class FileSharerServerHandler implements Runnable {
 
     }
 
-    private void sendResponse(String responseCode, byte[] content)
+    private void sendResponse(String responseCode, String content)
             throws IOException {
-        responseOutput.writeBytes(responseCode + "\r\n");
-//        responseOutput.writeBytes("Date: " + (new Date()) + "\r\n");
-//        responseOutput.writeBytes("Server: Example-http-Server v1.0.0\r\n");
-//        responseOutput.writeBytes("Content-Length: " + content.length + "\r\n");
-        responseOutput.writeBytes("Connection: Close\r\n\r\n");
-
-        responseOutput.write(content);
+        responseOutput.println(responseCode);
+        responseOutput.println(content);
         responseOutput.flush();
     }
 
     private void sendError(String errorCode, String description)
             throws IOException {
-        sendResponse("405", description.getBytes());
+        sendResponse("405", description);
     }
 }
