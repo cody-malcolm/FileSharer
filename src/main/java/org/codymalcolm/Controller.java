@@ -15,7 +15,7 @@ public class Controller {
     private boolean serverFile = false;
 
     public void initialize() {
-        selectedFilename = localDirectory.getText() + "test.txt";
+        selectedFilename = localDirectory.getText() + "test(5).txt";
     }
 
     public void upload(ActionEvent actionEvent) {
@@ -26,7 +26,10 @@ public class Controller {
     }
 
     public void download(ActionEvent actionEvent) {
-        client.requestDownload();
+        serverFile = true; // TODO this needs to be implemented eventually
+        if (null != selectedFilename && serverFile) {
+            client.requestDownload(selectedFilename, localDirectory.getText());
+        }
     }
 
     public void dir(ActionEvent actionEvent) {

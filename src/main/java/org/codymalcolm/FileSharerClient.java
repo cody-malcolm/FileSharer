@@ -49,8 +49,12 @@ public class FileSharerClient extends Application {
         processResponse();
     }
 
-    public void requestDownload() {
+    public void requestDownload(String filename, String localDirectory) {
+        establishConnection();
+        sendRequest("DOWNLOAD", filename);
+        processDownload(filename, localDirectory);
     }
+
 
     public void requestDirectory() {
         establishConnection();
@@ -65,8 +69,26 @@ public class FileSharerClient extends Application {
         processResponse();
     }
 
+    private void processDownload(String filename, String localDirectory) {
+        String line;
+        try {
+            if ((line = in.readLine()).equals("201")) {
+                filename = Utils.getFilename(filename);
+                PrintWriter writer = new PrintWriter(new File(filename));
+                while(in.ready() && (null != (line = in.readLine()))) {
+                    writer.println(line);
+                }
+                writer.flush();
+                writer.close();
+            } else {
+                System.out.println("Did not receive the file");
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void processResponse() {
-        System.out.println("Response");
         String line;
         try {
             while (null != (line = in.readLine())) {

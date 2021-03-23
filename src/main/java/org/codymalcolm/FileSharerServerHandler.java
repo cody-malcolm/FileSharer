@@ -67,7 +67,6 @@ public class FileSharerServerHandler implements Runnable {
             e.printStackTrace();
         }
         File file = new File(filename);
-        System.out.println(filename);
         if (file.exists()) {
             file.delete();
         }
@@ -75,7 +74,27 @@ public class FileSharerServerHandler implements Runnable {
     }
 
     private void handleDownload() {
+        try {
+            String filename = directory.getName() + "/" + requestInput.readLine();
 
+            String content = "";
+            // read and copy file
+            try {
+                System.out.println(filename);
+                BufferedReader input = new BufferedReader(new FileReader(new File(filename)));
+
+                String line;
+
+                while (null != (line = input.readLine())) {
+                    content += line + "\r\n";
+                }
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+            sendResponse("201", content);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void handleDir() {
@@ -105,17 +124,7 @@ public class FileSharerServerHandler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        File temp = new File(filename);
-        int i = 1;
-        while (temp.exists()) {
-            if (i == 1) {
-                filename = incrementIteration(filename);
-            } else {
-                filename = incrementIteration(filename, i);
-            }
-            temp = new File(filename);
-            i++;
-        }
+        filename = Utils.getFilename(filename);
 
         try {
             PrintWriter output = new PrintWriter(filename);
@@ -137,24 +146,7 @@ public class FileSharerServerHandler implements Runnable {
         handleDir();
     }
 
-    private String incrementIteration(String oldFilename) {
-        int extensionStartsAt = oldFilename.lastIndexOf('.');
-        String extension = oldFilename.substring(extensionStartsAt);
-        return oldFilename.substring(0, extensionStartsAt) + "(1)" + extension;
-    }
 
-    private String incrementIteration(String oldFilename, int i) {
-        int iterationStartsAt = oldFilename.lastIndexOf('(')+1;
-        int iterationEndsAt = oldFilename.lastIndexOf(')');
-        String filename = oldFilename.substring(0, iterationStartsAt);
-        if (Integer.parseInt(oldFilename.substring(iterationStartsAt, iterationEndsAt))+1 == i) {
-            filename += i;
-        } else {
-            filename += oldFilename.substring(iterationStartsAt, iterationEndsAt);
-        }
-        filename += oldFilename.substring(iterationEndsAt);
-        return filename;
-    }
 
     private void sendResponse(String responseCode, String content)
             throws IOException {
