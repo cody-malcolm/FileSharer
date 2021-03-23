@@ -19,10 +19,8 @@ public class Controller {
     }
 
     public void upload(ActionEvent actionEvent) {
-        System.out.println(1);
-        localFile = true;
+        localFile = true; // TODO this needs to be implemented eventually
         if (null != selectedFilename && localFile) {
-            System.out.println(2);
             client.requestUpload(selectedFilename);
         }
     }
@@ -36,7 +34,10 @@ public class Controller {
     }
 
     public void delete(ActionEvent actionEvent) {
-        client.requestDelete();
+        serverFile = true; // TODO this needs to be implemented eventually
+        if (null != selectedFilename && serverFile) {
+            client.requestDelete(selectedFilename);
+        }
     }
 
     public void setClient(FileSharerClient client) {

@@ -2,6 +2,7 @@ package org.codymalcolm;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 public class FileSharerServerHandler implements Runnable {
@@ -42,10 +43,12 @@ public class FileSharerServerHandler implements Runnable {
         try {
             if (request.regionMatches(true, 0, "dir", 0, 3)) {
                 handleDir();
-            } else if (request.regionMatches(true, 0, "upload ", 0, 7)) {
-                handleUpload(request);
-            } else if (request.regionMatches(true, 0, "download  ", 0, 9)) {
-            } else if (request.regionMatches(true, 0, "delete  ", 0, 7)) {
+            } else if (request.regionMatches(true, 0, "upload", 0, 6)) {
+                handleUpload();
+            } else if (request.regionMatches(true, 0, "download", 0, 8)) {
+                handleDownload();
+            } else if (request.regionMatches(true, 0, "delete", 0, 6)) {
+                handleDelete();
             }else {
                 sendError("405", "'" + request.split("\\s")[0] + "' is not a valid " +
                         "command on this server.");
@@ -56,9 +59,29 @@ public class FileSharerServerHandler implements Runnable {
         }
     }
 
+    private void handleDelete() {
+        String filename = directory.getName() + "/";
+        try {
+            filename += requestInput.readLine();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+        File file = new File(filename);
+        System.out.println(filename);
+        if (file.exists()) {
+            file.delete();
+        }
+        handleDir();
+    }
+
+    private void handleDownload() {
+
+    }
+
     private void handleDir() {
         String responseCode = "201";
         String[] contents = directory.list();
+        Arrays.sort(contents);
         String content = "";
         for (String c : contents) {
             content += c + "\r\n";
@@ -70,8 +93,18 @@ public class FileSharerServerHandler implements Runnable {
         }
     }
 
-    private void handleUpload(String request) {
-        String filename = directory.getPath() + "/" + request.split("\\s")[1];
+    private void handleUpload() {
+        String filename = directory.getName() + "/";
+        try {
+            String name = requestInput.readLine();
+            if (name != "") {
+                filename += name;
+            } else {
+                filename += "newfile.txt";
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         File temp = new File(filename);
         int i = 1;
         while (temp.exists()) {
@@ -121,10 +154,6 @@ public class FileSharerServerHandler implements Runnable {
         }
         filename += oldFilename.substring(iterationEndsAt);
         return filename;
-    }
-
-    private void sendFile(File baseDir, String uri) throws IOException {
-
     }
 
     private void sendResponse(String responseCode, String content)

@@ -58,12 +58,11 @@ public class FileSharerClient extends Application {
         processResponse();
     }
 
-    private void sendRequest(String type) {
-        out.println(type);
-        out.flush();
-    }
 
-    public void requestDelete() {
+    public void requestDelete(String filename) {
+        establishConnection();
+        sendRequest("DELETE", filename);
+        processResponse();
     }
 
     private void processResponse() {
@@ -78,25 +77,33 @@ public class FileSharerClient extends Application {
         }
     }
 
+    private void sendRequest(String type) {
+        out.println(type);
+        out.flush();
+    }
+
     private void sendRequest(String type, String filename) {
         // TODO add a code to indicate successful file read
         // TODO don't forget about host machine alias
+        out.println(type);
+
         File file = new File(filename);
-        out.println(type + " " + file.getName());
+        out.println(file.getName());
 
-        // read and copy file
-        try {
-            BufferedReader input = new BufferedReader(new FileReader(file));
+        if (type == "UPLOAD") {
+            // read and copy file
+            try {
+                BufferedReader input = new BufferedReader(new FileReader(file));
 
-            String line;
+                String line;
 
-            while (null != (line = input.readLine())) {
-                out.print(line + "\r\n");
+                while (null != (line = input.readLine())) {
+                    out.println(line);
+                }
+            } catch(IOException e) {
+                e.printStackTrace();
             }
-        } catch(IOException e) {
-            e.printStackTrace();
         }
-
         out.flush();
     }
 
