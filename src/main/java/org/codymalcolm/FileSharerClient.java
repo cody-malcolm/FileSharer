@@ -75,11 +75,12 @@ public class FileSharerClient extends Application {
         // TODO add a code to indicate successful file read
         // TODO don't forget about host machine alias
         System.out.println(7);
-        out.print(type + " " + filename + "\r\n");
+        File file = new File(filename);
+        out.print(type + " " + file.getName() + "\r\n");
 
         // read and copy file
         try {
-            BufferedReader input = new BufferedReader(new FileReader(new File(filename)));
+            BufferedReader input = new BufferedReader(new FileReader(file));
 
             String line;
 

@@ -7,11 +7,13 @@ import java.util.NoSuchElementException;
 public class FileSharerServerHandler implements Runnable {
 
     private Socket socket = null;
+    private File directory = null;
     private BufferedReader requestInput = null;
     private DataOutputStream responseOutput = null;
 
-    public FileSharerServerHandler(Socket socket) throws IOException {
+    public FileSharerServerHandler(Socket socket, File directory) throws IOException {
         this.socket = socket;
+        this.directory = directory;
 
         requestInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         responseOutput = new DataOutputStream(socket.getOutputStream());
@@ -54,15 +56,24 @@ public class FileSharerServerHandler implements Runnable {
     }
 
     private void handleUpload(String request) {
-        String filename = request.split("\\s")[1];
-
-        String line = null;
+        String filename = directory.getPath() + "/" + request.split("\\s")[1];
+        // TODO check for file name conflicts on server side
         try {
-            while (null != (line = requestInput.readLine())) {
-                System.out.println(line);
+            PrintWriter output = new PrintWriter(filename);
+            String line = null;
+            try {
+                while (null != (line = requestInput.readLine())) {
+                    output.println(line);
+                    output.flush();
+                }
+            } catch(IOException e) {
+                e.printStackTrace();
+            } finally {
+                output.close();
             }
         } catch(IOException e) {
             e.printStackTrace();
+            System.out.println("An error occurred when creating file named " + filename + " on the server-side");
         }
     }
 

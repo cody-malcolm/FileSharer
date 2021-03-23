@@ -15,7 +15,7 @@ public class Controller {
     private boolean serverFile = false;
 
     public void initialize() {
-        selectedFilename = localDirectory.getText() + "test.txt";
+        selectedFilename = localDirectory.getText() + "Player.java";
     }
 
     public void upload(ActionEvent actionEvent) {

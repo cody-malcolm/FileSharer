@@ -1,5 +1,6 @@
 package org.codymalcolm;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,7 +13,7 @@ public class FileSharerServer {
     private Thread[] threads = null;
     private int numClients = 0;
 
-    public FileSharerServer() {
+    public FileSharerServer(File directory) {
         try {
             serverSocket = new ServerSocket(PORT);
             System.out.print("Server is running. ");
@@ -25,7 +26,7 @@ public class FileSharerServer {
                 } // TODO: Does this cause unintended behaviour? don't think it will, but check at end
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Connecting " + numClients);
-                FileSharerServerHandler handler = new FileSharerServerHandler(clientSocket);
+                FileSharerServerHandler handler = new FileSharerServerHandler(clientSocket, directory);
 
                 threads[numClients] = new Thread(handler);
                 threads[numClients++].start();
@@ -37,6 +38,16 @@ public class FileSharerServer {
 
 
     public static void main(String[] args) {
-        new FileSharerServer();
+        String sharedFolderName = "./shared/";
+        // gradle command - 'gradle startServer --args="<name>"'
+        if (args.length > 0) {
+            sharedFolderName = args[0];
+        }
+        File directory = new File(sharedFolderName);
+        if (!directory.exists()) {
+            System.out.println("Shared folder not found. Creating new shared folder...");
+            directory.mkdir();
+        }
+        new FileSharerServer(directory);
     }
 }
