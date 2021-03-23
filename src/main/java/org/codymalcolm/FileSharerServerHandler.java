@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.util.NoSuchElementException;
 
 public class FileSharerServerHandler implements Runnable {
+    // TODO don't forget the synchronized stuff
 
     private Socket socket = null;
     private File directory = null;
@@ -57,7 +58,18 @@ public class FileSharerServerHandler implements Runnable {
 
     private void handleUpload(String request) {
         String filename = directory.getPath() + "/" + request.split("\\s")[1];
-        // TODO check for file name conflicts on server side
+        File temp = new File(filename);
+        int i = 1;
+        while (temp.exists()) {
+            if (i == 1) {
+                filename = incrementIteration(filename);
+            } else {
+                filename = incrementIteration(filename, i);
+            }
+            temp = new File(filename);
+            i++;
+        }
+
         try {
             PrintWriter output = new PrintWriter(filename);
             String line = null;
@@ -75,6 +87,25 @@ public class FileSharerServerHandler implements Runnable {
             e.printStackTrace();
             System.out.println("An error occurred when creating file named " + filename + " on the server-side");
         }
+    }
+
+    private String incrementIteration(String oldFilename) {
+        int extensionStartsAt = oldFilename.lastIndexOf('.');
+        String extension = oldFilename.substring(extensionStartsAt);
+        return oldFilename.substring(0, extensionStartsAt) + "(1)" + extension;
+    }
+
+    private String incrementIteration(String oldFilename, int i) {
+        int iterationStartsAt = oldFilename.lastIndexOf('(')+1;
+        int iterationEndsAt = oldFilename.lastIndexOf(')');
+        String filename = oldFilename.substring(0, iterationStartsAt);
+        if (Integer.parseInt(oldFilename.substring(iterationStartsAt, iterationEndsAt))+1 == i) {
+            filename += i;
+        } else {
+            filename += oldFilename.substring(iterationStartsAt, iterationEndsAt);
+        }
+        filename += oldFilename.substring(iterationEndsAt);
+        return filename;
     }
 
     private void sendFile(File baseDir, String uri) throws IOException {
