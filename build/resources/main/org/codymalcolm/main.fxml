@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="org.codymalcolm.Controller"
-          prefHeight="800.0" prefWidth="1200.0">
+          minHeight="800.0" maxHeight="800.0" prefWidth="1200.0">
     <padding>
         <Insets top="10" bottom="10" left="10" right="10" />
     </padding>
@@ -19,7 +19,7 @@
     <Label fx:id="localDirectory" GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.columnSpan="4" />
 
     <SplitPane GridPane.columnSpan="4" GridPane.rowIndex="2" GridPane.columnIndex="0" prefWidth="1180" dividerPositions="0.3,0.6">
-        <VBox styleClass="vbox" minWidth="100" minHeight="700">
+        <VBox styleClass="vboxs" minWidth="100" minHeight="700">
             <Label styleClass="header" text="Local Directory" />
             <TreeView styleClass="treeview" onMouseClicked="#handleLocalTreeClick" prefHeight="700">
                 <root>
@@ -31,9 +31,9 @@
                 </root>
             </TreeView>
         </VBox>
-        <VBox styleClass="vbox" minWidth="100">
+        <VBox styleClass="vboxs" minWidth="100">
             <Label styleClass="header" text="Shared Directory" />
-            <TreeView styleClass="treeview" onMouseClicked="#handleServerTreeClick" prefHeight="700">
+            <TreeView styleClass="treeview" onMouseClicked="#handleServerTreeClick" minHeight="700" maxHeight="700">
                 <root>
                     <TreeItem fx:id="serverDirectoryName" expanded="true">
                         <children>
@@ -43,9 +43,14 @@
                 </root>
             </TreeView>
         </VBox>
-        <VBox styleClass="vbox" minWidth="100">
+        <VBox fx:id="previewContainer" styleClass="vboxs" minWidth="100">
             <Label styleClass="header" text="File Preview" />
-            <Label styleClass="preview" fx:id="preview" />
+            <ScrollPane fx:id="previewPane" maxHeight="700" minHeight="700">
+                <Label fx:id="preview" />
+            </ScrollPane>
+            <VBox fx:id="previewInstructionsContainer" styleClass="center" maxHeight="700" minHeight="700">
+                <Label fx:id="previewInstructions"  text="Select a file to see a preview." />
+            </VBox>
         </VBox>
     </SplitPane>
 

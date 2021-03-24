@@ -94,6 +94,7 @@ public class FileSharerClient extends Application {
 
     private void processDownload(String filename, String localDirectory) {
         String line;
+
         try {
             if ((line = in.readLine()).equals("201")) {
                 filename = Utils.getFilename(localDirectory + filename);

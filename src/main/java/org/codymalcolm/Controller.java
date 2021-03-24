@@ -3,10 +3,12 @@ package org.codymalcolm;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 
-import java.io.File;
+import java.io.*;
 import java.util.Arrays;
 
 public class Controller {
@@ -16,6 +18,16 @@ public class Controller {
     private TreeItem<String> localDirectoryName;
     @FXML
     private TreeItem<String> serverDirectoryName;
+    @FXML
+    private Label preview;
+    @FXML
+    private ScrollPane previewPane;
+    @FXML
+    private Label previewInstructions;
+    @FXML
+    private VBox previewInstructionsContainer;
+    @FXML
+    private VBox previewContainer;
 
     private String initialLocalDirectory = null;
     private FileSharerClient client = null;
@@ -33,6 +45,7 @@ public class Controller {
 
     public void setup() {
         localDirectory.setText(initialLocalDirectory);
+        previewContainer.getChildren().remove(1);
     }
 
     public void refreshLocal() {
@@ -94,15 +107,34 @@ public class Controller {
     public void handleLocalTreeClick(MouseEvent mouseEvent) {
         String filename = localDirectory.getText() + parseTreeSelection(mouseEvent.getTarget().toString());
 
-        File testing = new File(filename);
-        if (testing.exists()) {
+        File temp = new File(filename);
+        if (temp.exists()) {
             selectedFilename = filename;
             localFile = true;
             serverFile = false;
+
+            String previewText = "";
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(temp));
+
+                String line;
+                while (null != (line = reader.readLine())) {
+                    previewText += line + "\r\n";
+                }
+                reader.close();
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+
+            preview.setText(previewText);
+            previewContainer.getChildren().remove(1);
+            previewContainer.getChildren().add(previewPane);
         } else {
             selectedFilename = null;
             localFile = false;
             serverFile = false;
+            previewContainer.getChildren().remove(1);
+            previewContainer.getChildren().add(previewInstructionsContainer);
         }
     }
 

@@ -1,7 +1,8 @@
 .header {
-    -fx-min-width: 1180px;
-    -fx-background-color: hsb(0,0%,75%);
     -fx-font-size: 16px;
+    -fx-text-fill: hsb(0,100%,50%);
+    -fx-label-padding: 10;
+    -fx-font-weight: bold;
 }
 
 .button {
@@ -12,4 +13,14 @@
 
 .treeitem {
     -fx-background-color: hsb(0,50%,50%);
+}
+
+.vboxs {
+    -fx-alignment: top-center;
+    -fx-background-color: hsb(0,0%,75%);
+}
+
+.center {
+    -fx-alignment: center;
+    -fx-background-color: hsb(0,0%,90%);
 }
