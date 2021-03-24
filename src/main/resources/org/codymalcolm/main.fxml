@@ -21,7 +21,7 @@
     <SplitPane GridPane.columnSpan="4" GridPane.rowIndex="2" GridPane.columnIndex="0" prefWidth="1180" dividerPositions="0.3,0.6">
         <VBox styleClass="vbox" minWidth="100">
             <Label styleClass="header" text="Local Directory" />
-            <TreeView styleClass="treeview">
+            <TreeView styleClass="treeview" onMouseClicked="#handleLocalTreeClick">
                 <root>
                     <TreeItem fx:id="localDirectoryName" expanded="true">
                         <children>

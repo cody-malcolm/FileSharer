@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
+import javafx.scene.input.MouseEvent;
 
 import java.io.File;
 
@@ -34,7 +35,6 @@ public class Controller {
 
     public void refreshLocal() {
         String directory = localDirectory.getText();
-        selectedFilename = directory + "test.txt";
         localDirectoryName.setValue(directory);
         File dir = new File(directory);
         for (String filename : dir.list()) {
@@ -45,7 +45,8 @@ public class Controller {
     }
 
     public void upload(ActionEvent actionEvent) {
-        localFile = true; // TODO this needs to be implemented eventually
+        System.out.println(selectedFilename);
+        System.out.println(localFile);
         if (null != selectedFilename && localFile) {
             client.requestUpload(selectedFilename);
         }
@@ -71,5 +72,29 @@ public class Controller {
 
     public void setClient(FileSharerClient client) {
         this.client = client;
+    }
+
+    public void handleLocalTreeClick(MouseEvent mouseEvent) {
+        String temp = mouseEvent.getTarget().toString();
+        int start = temp.indexOf("text=") + 6; // will be 5 if "text=" was not found
+        int end;
+        // if you click near the edge of the TreeItem, temp will be of the form "...]'<name>'", so "text=" is not found
+        if (start == 5) {
+            start = temp.indexOf("]'") + 2;
+            end = temp.indexOf('\'', start);
+        } else {// if you click the TreeItem directly, temp will be of the form: "Text[text="<name>", ...]"
+            end = temp.indexOf('"', start);
+        }
+        String filename = localDirectory.getText() + temp.substring(start, end);
+        File testing = new File(filename);
+        if (testing.exists()) {
+            selectedFilename = filename;
+            localFile = true;
+            serverFile = false;
+        } else {
+            selectedFilename = null;
+            localFile = false;
+            serverFile = false;
+        }
     }
 }

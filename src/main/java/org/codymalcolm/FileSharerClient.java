@@ -52,29 +52,45 @@ public class FileSharerClient extends Application {
     }
 
     public void requestUpload(String filename) {
-        establishConnection();
-        sendRequest("UPLOAD", filename);
-        processResponse();
+        boolean connected = establishConnection();
+        if (connected) {
+            sendRequest("UPLOAD", filename);
+            processResponse();
+        } else {
+            System.out.println("A connection was not established."); // TODO output these to UI
+        }
     }
 
     public void requestDownload(String filename, String localDirectory) {
-        establishConnection();
-        sendRequest("DOWNLOAD", filename);
-        processDownload(filename, localDirectory);
+        boolean connected = establishConnection();
+        if (connected) {
+            sendRequest("DOWNLOAD", filename);
+            processDownload(filename, localDirectory);
+        } else {
+            System.out.println("A connection was not established.");
+        }
     }
 
 
     public void requestDirectory() {
-        establishConnection();
-        sendRequest("DIR");
-        processResponse();
+        boolean connected = establishConnection();
+        if (connected) {
+            sendRequest("DIR");
+            processResponse();
+        } else {
+            System.out.println("A connection was not established.");
+        }
     }
 
 
     public void requestDelete(String filename) {
-        establishConnection();
-        sendRequest("DELETE", filename);
-        processResponse();
+        boolean connected = establishConnection();
+        if (connected) {
+            sendRequest("DELETE", filename);
+            processResponse();
+        } else {
+            System.out.println("A connection was not established.");
+        }
     }
 
     private void processDownload(String filename, String localDirectory) {
@@ -137,15 +153,16 @@ public class FileSharerClient extends Application {
         out.flush();
     }
 
-    private void establishConnection() {
+    private boolean establishConnection() {
         try {
             Socket socket = new Socket(hostname, port);
 
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream());
+            return true;
 
         } catch(IOException e) {
-            e.printStackTrace();
+            return false;
         }
     }
 }
