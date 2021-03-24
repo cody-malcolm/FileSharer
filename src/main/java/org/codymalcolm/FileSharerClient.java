@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.List;
 
 public class FileSharerClient extends Application {
     private BufferedReader in;
@@ -24,6 +25,11 @@ public class FileSharerClient extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        List<String> parameters = getParameters().getRaw();
+        if (parameters.isEmpty()) {
+            System.out.println("No local directory provided");
+            System.exit(0);
+        }
         FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
         Parent root;
         try {
@@ -33,9 +39,11 @@ public class FileSharerClient extends Application {
             primaryStage.setTitle("File Sharer v1.0");
             primaryStage.setScene(new Scene(root));
             primaryStage.show();
-
             client = new FileSharerClient();
             controller.setClient(client);
+            controller.setInitialLocalDirectory(parameters.get(0));
+            controller.setup();
+            controller.refreshLocal();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -140,6 +148,4 @@ public class FileSharerClient extends Application {
             e.printStackTrace();
         }
     }
-
-
 }

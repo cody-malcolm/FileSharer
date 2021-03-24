@@ -1,21 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<?import javafx.geometry.Insets?>
+<?import java.net.URL?>
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="org.codymalcolm.Controller"
-          prefHeight="400.0" prefWidth="600.0">
+          prefHeight="800.0" prefWidth="1200.0">
     <padding>
         <Insets top="10" bottom="10" left="10" right="10" />
     </padding>
-    <Button GridPane.rowIndex="0" GridPane.columnIndex="0" onAction="#upload">Upload!</Button>
-    <Button GridPane.rowIndex="0" GridPane.columnIndex="1" onAction="#download">Download!</Button>
-    <Button GridPane.rowIndex="0" GridPane.columnIndex="2" onAction="#dir">Refresh!</Button>
-    <Button GridPane.rowIndex="0" GridPane.columnIndex="3" onAction="#delete">Delete!</Button>
-    <Label fx:id="localDirectory" GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.columnSpan="4">src/main/resources/local/</Label>
+    <stylesheets>
+        <URL value="@main.css" />
+    </stylesheets>
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="0" onAction="#upload" styleClass="button">Upload!</Button>
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="1" onAction="#download" styleClass="button">Download!</Button>
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="2" onAction="#dir" styleClass="button">Refresh!</Button>
+    <Button GridPane.rowIndex="0" GridPane.columnIndex="3" onAction="#delete" styleClass="button">Delete!</Button>
+    <Label fx:id="localDirectory" GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.columnSpan="4" />
+
+    <SplitPane GridPane.columnSpan="4" GridPane.rowIndex="2" GridPane.columnIndex="0" prefWidth="1180" dividerPositions="0.3,0.6">
+        <VBox styleClass="vbox" minWidth="100">
+            <Label styleClass="header" text="Local Directory" />
+            <TreeView styleClass="treeview">
+                <root>
+                    <TreeItem fx:id="localDirectoryName" expanded="true">
+                        <children>
+
+                        </children>
+                    </TreeItem>
+                </root>
+            </TreeView>
+        </VBox>
+        <VBox styleClass="vbox" minWidth="100">
+            <Label styleClass="header" text="Shared Directory" />
+            <TreeView styleClass="treeview">
+
+            </TreeView>
+        </VBox>
+        <VBox styleClass="vbox" minWidth="100">
+            <Label styleClass="header" text="File Preview" />
+            <Label styleClass="preview" fx:id="preview" />
+        </VBox>
+    </SplitPane>
 
 </GridPane>
