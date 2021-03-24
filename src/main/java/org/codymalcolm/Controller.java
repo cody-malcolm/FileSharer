@@ -143,6 +143,17 @@ public class Controller {
         selectedFilename = filename;
         localFile = false;
         serverFile = true;
+
+        previewContainer.getChildren().remove(1);
+
+        String filePreview = client.requestPreview(filename);
+        System.out.println(filePreview);
+        if (!"".equals(filePreview)) {
+            preview.setText(filePreview);
+            previewContainer.getChildren().add(previewPane);
+        } else {
+            previewContainer.getChildren().add(previewInstructionsContainer);
+        }
     }
 
     public void updateServerDirectory(String sharedDirectoryName) {

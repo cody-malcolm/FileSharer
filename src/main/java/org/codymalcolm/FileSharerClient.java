@@ -70,6 +70,15 @@ public class FileSharerClient extends Application {
         }
     }
 
+    public String requestPreview(String filename) {
+        boolean connected = establishConnection();
+        if (connected) {
+            sendRequest("DOWNLOAD", filename);
+            return processPreview();
+        } else {
+            return "";
+        }
+    }
 
     public void requestDirectory() {
         boolean connected = establishConnection();
@@ -81,7 +90,6 @@ public class FileSharerClient extends Application {
         }
     }
 
-
     public void requestDelete(String filename) {
         boolean connected = establishConnection();
         if (connected) {
@@ -89,6 +97,25 @@ public class FileSharerClient extends Application {
             processDirectoryResponse();
         } else {
             System.out.println("A connection was not established.");
+        }
+    }
+
+    private String processPreview() {
+        String response = "";
+        String line;
+
+        try {
+            if ((line = in.readLine()).equals("201")) {
+                while(in.ready() && (null != (line = in.readLine()))) {
+                    response += line + "\r\n";
+                }
+                return response;
+            } else {
+                return "";
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
+            return "";
         }
     }
 
@@ -106,6 +133,7 @@ public class FileSharerClient extends Application {
                 writer.close();
                 controller.refreshLocal();
             } else {
+                // TODO Could give a more detailed error message here
                 System.out.println("Did not receive the file");
             }
         } catch(IOException e) {
@@ -182,4 +210,5 @@ public class FileSharerClient extends Application {
             return false;
         }
     }
+
 }

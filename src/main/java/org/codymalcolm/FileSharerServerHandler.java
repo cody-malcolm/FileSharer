@@ -77,11 +77,15 @@ public class FileSharerServerHandler implements Runnable {
     private void handleDownload() {
         try {
             String filename = directory.getName() + "/" + requestInput.readLine();
-
+            File temp = new File(filename);
+            if (!temp.exists()) {
+                sendResponse("404", "That file doesn't exist");
+                return;
+            }
             String content = "";
             // read and copy file
             try {
-                BufferedReader input = new BufferedReader(new FileReader(new File(filename)));
+                BufferedReader input = new BufferedReader(new FileReader(temp));
 
                 String line;
 
@@ -155,6 +159,6 @@ public class FileSharerServerHandler implements Runnable {
 
     private void sendError(String errorCode, String description)
             throws IOException {
-        sendResponse("405", description);
+        sendResponse(errorCode, description);
     }
 }
