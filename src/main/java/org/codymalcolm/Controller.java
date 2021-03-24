@@ -14,6 +14,8 @@ public class Controller {
     private Label localDirectory;
     @FXML
     private TreeItem<String> localDirectoryName;
+    @FXML
+    private TreeItem<String> serverDirectoryName;
 
     private String initialLocalDirectory = null;
     private FileSharerClient client = null;
@@ -22,7 +24,7 @@ public class Controller {
     private boolean serverFile = false;
 
     public void initialize() {
-
+        System.out.println("setting up controller");
     }
 
     public void setInitialLocalDirectory(String d) {
@@ -60,6 +62,7 @@ public class Controller {
     }
 
     public void dir(ActionEvent actionEvent) {
+        System.out.println(this);
         client.requestDirectory();
     }
 
@@ -96,5 +99,43 @@ public class Controller {
             localFile = false;
             serverFile = false;
         }
+    }
+
+    public void handleServerTreeClick(MouseEvent mouseEvent) {
+        String temp = mouseEvent.getTarget().toString();
+        int start = temp.indexOf("text=") + 6; // will be 5 if "text=" was not found
+        int end;
+        // if you click near the edge of the TreeItem, temp will be of the form "...]'<name>'", so "text=" is not found
+        if (start == 5) {
+            start = temp.indexOf("]'") + 2;
+            end = temp.indexOf('\'', start);
+        } else {// if you click the TreeItem directly, temp will be of the form: "Text[text="<name>", ...]"
+            end = temp.indexOf('"', start);
+        }
+        String filename = localDirectory.getText() + temp.substring(start, end);
+        File testing = new File(filename);
+        if (testing.exists()) {
+            selectedFilename = filename;
+            localFile = true;
+            serverFile = false;
+        } else {
+            selectedFilename = null;
+            localFile = false;
+            serverFile = false;
+        }
+    }
+
+    public void updateServerDirectory(String sharedDirectoryName) {
+        serverDirectoryName.setValue(sharedDirectoryName);
+    }
+
+    public void addServerFileListing(String filename) {
+        TreeItem<String> entry = new TreeItem<>();
+        entry.setValue(filename);
+        serverDirectoryName.getChildren().add(entry);
+    }
+
+    public void clearServerTree() {
+        serverDirectoryName.getChildren().clear();
     }
 }

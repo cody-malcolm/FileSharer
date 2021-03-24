@@ -17,7 +17,6 @@ public class FileSharerClient extends Application {
 //    private String uri;
     private int port = 9001;
     private Controller controller;
-    private FileSharerClient client;
 
     public static void main(String[] args) {
         launch(args);
@@ -39,11 +38,11 @@ public class FileSharerClient extends Application {
             primaryStage.setTitle("File Sharer v1.0");
             primaryStage.setScene(new Scene(root));
             primaryStage.show();
-            client = new FileSharerClient();
-            controller.setClient(client);
+            controller.setClient(this);
             controller.setInitialLocalDirectory(parameters.get(0));
             controller.setup();
             controller.refreshLocal();
+            requestDirectory();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -55,7 +54,7 @@ public class FileSharerClient extends Application {
         boolean connected = establishConnection();
         if (connected) {
             sendRequest("UPLOAD", filename);
-            processResponse();
+            processDirectoryResponse();
         } else {
             System.out.println("A connection was not established."); // TODO output these to UI
         }
@@ -76,7 +75,7 @@ public class FileSharerClient extends Application {
         boolean connected = establishConnection();
         if (connected) {
             sendRequest("DIR");
-            processResponse();
+            processDirectoryResponse();
         } else {
             System.out.println("A connection was not established.");
         }
@@ -106,6 +105,22 @@ public class FileSharerClient extends Application {
                 writer.close();
             } else {
                 System.out.println("Did not receive the file");
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void processDirectoryResponse() {
+        String line;
+        try {
+            if ("201".equals(line = in.readLine())) {
+                controller.clearServerTree();
+                String sharedDirectoryName = (line = in.readLine());
+                controller.updateServerDirectory(sharedDirectoryName);
+                while (!"".equals(line = in.readLine())) {
+                    controller.addServerFileListing(line);
+                }
             }
         } catch(IOException e) {
             e.printStackTrace();

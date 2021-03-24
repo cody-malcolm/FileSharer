@@ -33,8 +33,14 @@
         </VBox>
         <VBox styleClass="vbox" minWidth="100">
             <Label styleClass="header" text="Shared Directory" />
-            <TreeView styleClass="treeview">
+            <TreeView styleClass="treeview" onMouseClicked="#handleServerTreeClick">
+                <root>
+                    <TreeItem fx:id="serverDirectoryName" expanded="true">
+                        <children>
 
+                        </children>
+                    </TreeItem>
+                </root>
             </TreeView>
         </VBox>
         <VBox styleClass="vbox" minWidth="100">

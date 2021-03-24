@@ -38,7 +38,7 @@ public class FileSharerServer {
 
 
     public static void main(String[] args) {
-        String sharedFolderName = "./shared/";
+        String sharedFolderName = "shared/";
         // gradle command - 'gradle startServer --args="<name>"'
         if (args.length > 0) {
             sharedFolderName = args[0];

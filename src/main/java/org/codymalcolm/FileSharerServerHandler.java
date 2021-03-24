@@ -101,7 +101,7 @@ public class FileSharerServerHandler implements Runnable {
         String responseCode = "201";
         String[] contents = directory.list();
         Arrays.sort(contents);
-        String content = "";
+        String content = directory.getPath() + "\r\n";
         for (String c : contents) {
             content += c + "\r\n";
         }
@@ -145,8 +145,6 @@ public class FileSharerServerHandler implements Runnable {
         }
         handleDir();
     }
-
-
 
     private void sendResponse(String responseCode, String content)
             throws IOException {
