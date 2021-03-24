@@ -13,7 +13,7 @@ import java.util.List;
 public class FileSharerClient extends Application {
     private BufferedReader in;
     private PrintWriter out;
-    private String hostname = "localhost";
+    private String hostname = "104.158.13.126";
 //    private String uri;
     private int port = 9001;
     private Controller controller;
@@ -86,7 +86,7 @@ public class FileSharerClient extends Application {
         boolean connected = establishConnection();
         if (connected) {
             sendRequest("DELETE", filename);
-            processResponse();
+            processDirectoryResponse();
         } else {
             System.out.println("A connection was not established.");
         }

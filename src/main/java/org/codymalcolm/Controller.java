@@ -55,7 +55,6 @@ public class Controller {
     }
 
     public void download(ActionEvent actionEvent) {
-        serverFile = true; // TODO this needs to be implemented eventually
         if (null != selectedFilename && serverFile) {
             client.requestDownload(selectedFilename, localDirectory.getText());
         }
@@ -67,7 +66,6 @@ public class Controller {
     }
 
     public void delete(ActionEvent actionEvent) {
-        serverFile = true; // TODO this needs to be implemented eventually
         if (null != selectedFilename && serverFile) {
             client.requestDelete(selectedFilename);
         }
@@ -112,17 +110,10 @@ public class Controller {
         } else {// if you click the TreeItem directly, temp will be of the form: "Text[text="<name>", ...]"
             end = temp.indexOf('"', start);
         }
-        String filename = localDirectory.getText() + temp.substring(start, end);
-        File testing = new File(filename);
-        if (testing.exists()) {
+        String filename = temp.substring(start, end);
             selectedFilename = filename;
-            localFile = true;
-            serverFile = false;
-        } else {
-            selectedFilename = null;
             localFile = false;
-            serverFile = false;
-        }
+            serverFile = true;
     }
 
     public void updateServerDirectory(String sharedDirectoryName) {

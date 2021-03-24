@@ -60,6 +60,7 @@ public class FileSharerServerHandler implements Runnable {
     }
 
     private void handleDelete() {
+        // TODO All requests with filenames need to have the filename verified for existence
         String filename = directory.getName() + "/";
         try {
             filename += requestInput.readLine();
