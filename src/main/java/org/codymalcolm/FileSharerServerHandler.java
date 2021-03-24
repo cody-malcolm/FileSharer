@@ -81,7 +81,6 @@ public class FileSharerServerHandler implements Runnable {
             String content = "";
             // read and copy file
             try {
-                System.out.println(filename);
                 BufferedReader input = new BufferedReader(new FileReader(new File(filename)));
 
                 String line;

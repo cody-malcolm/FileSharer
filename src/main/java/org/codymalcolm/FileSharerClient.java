@@ -96,13 +96,14 @@ public class FileSharerClient extends Application {
         String line;
         try {
             if ((line = in.readLine()).equals("201")) {
-                filename = Utils.getFilename(filename);
+                filename = Utils.getFilename(localDirectory + filename);
                 PrintWriter writer = new PrintWriter(new File(filename));
                 while(in.ready() && (null != (line = in.readLine()))) {
                     writer.println(line);
                 }
                 writer.flush();
                 writer.close();
+                controller.refreshLocal();
             } else {
                 System.out.println("Did not receive the file");
             }

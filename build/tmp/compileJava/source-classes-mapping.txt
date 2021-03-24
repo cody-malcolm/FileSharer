@@ -1,9 +1,9 @@
 org/codymalcolm/Utils.java
  org.codymalcolm.Utils
-org/codymalcolm/FileSharerServerHandler.java
- org.codymalcolm.FileSharerServerHandler
 org/codymalcolm/FileSharerServer.java
  org.codymalcolm.FileSharerServer
+org/codymalcolm/FileSharerServerHandler.java
+ org.codymalcolm.FileSharerServerHandler
 org/codymalcolm/Controller.java
  org.codymalcolm.Controller
 org/codymalcolm/FileSharerClient.java

@@ -7,7 +7,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
 
 import java.io.File;
-
+import java.util.Arrays;
 
 public class Controller {
     @FXML
@@ -36,10 +36,13 @@ public class Controller {
     }
 
     public void refreshLocal() {
+        localDirectoryName.getChildren().clear();
         String directory = localDirectory.getText();
         localDirectoryName.setValue(directory);
         File dir = new File(directory);
-        for (String filename : dir.list()) {
+        String[] filenames = dir.list();
+        Arrays.sort(filenames);
+        for (String filename : filenames) {
             TreeItem<String> entry = new TreeItem<>();
             entry.setValue(filename);
             localDirectoryName.getChildren().add(entry);
@@ -75,18 +78,22 @@ public class Controller {
         this.client = client;
     }
 
-    public void handleLocalTreeClick(MouseEvent mouseEvent) {
-        String temp = mouseEvent.getTarget().toString();
-        int start = temp.indexOf("text=") + 6; // will be 5 if "text=" was not found
+    private String parseTreeSelection(String response) {
+        int start = response.indexOf("text=") + 6; // will be 5 if "text=" was not found
         int end;
         // if you click near the edge of the TreeItem, temp will be of the form "...]'<name>'", so "text=" is not found
         if (start == 5) {
-            start = temp.indexOf("]'") + 2;
-            end = temp.indexOf('\'', start);
+            start = response.indexOf("]'") + 2;
+            end = response.indexOf('\'', start);
         } else {// if you click the TreeItem directly, temp will be of the form: "Text[text="<name>", ...]"
-            end = temp.indexOf('"', start);
+            end = response.indexOf('"', start);
         }
-        String filename = localDirectory.getText() + temp.substring(start, end);
+        return response.substring(start, end);
+    }
+
+    public void handleLocalTreeClick(MouseEvent mouseEvent) {
+        String filename = localDirectory.getText() + parseTreeSelection(mouseEvent.getTarget().toString());
+
         File testing = new File(filename);
         if (testing.exists()) {
             selectedFilename = filename;
@@ -100,20 +107,10 @@ public class Controller {
     }
 
     public void handleServerTreeClick(MouseEvent mouseEvent) {
-        String temp = mouseEvent.getTarget().toString();
-        int start = temp.indexOf("text=") + 6; // will be 5 if "text=" was not found
-        int end;
-        // if you click near the edge of the TreeItem, temp will be of the form "...]'<name>'", so "text=" is not found
-        if (start == 5) {
-            start = temp.indexOf("]'") + 2;
-            end = temp.indexOf('\'', start);
-        } else {// if you click the TreeItem directly, temp will be of the form: "Text[text="<name>", ...]"
-            end = temp.indexOf('"', start);
-        }
-        String filename = temp.substring(start, end);
-            selectedFilename = filename;
-            localFile = false;
-            serverFile = true;
+        String filename = parseTreeSelection(mouseEvent.getTarget().toString());
+        selectedFilename = filename;
+        localFile = false;
+        serverFile = true;
     }
 
     public void updateServerDirectory(String sharedDirectoryName) {
