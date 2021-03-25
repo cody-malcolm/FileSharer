@@ -1,12 +1,21 @@
 .header {
     -fx-font-size: 16px;
-    -fx-text-fill: hsb(240,80%,65%);
     -fx-label-padding: 10;
     -fx-font-weight: bold;
 }
 
+.label {
+    -fx-text-fill: hsb(240,65%,45%);
+}
+
 .button {
     -fx-min-width: 100;
+    -fx-background-color: hsb(240, 8%, 80%);
+    -fx-text-fill: hsb(240,65%,45%);
+}
+
+.button:hover {
+    -fx-background-color: hsb(240, 8%, 85%);
 }
 
 .vboxs {
@@ -29,20 +38,27 @@
 
 #feedback {
     -fx-alignment: center;
+    -fx-font-size: 14px;
 }
 
 /* style the directory label to look like an input field */
 #directory {
-    -fx-min-width: 540;
-    -fx-padding: 3 3 3 3;
+    -fx-min-width: 860;
+    -fx-label-padding: 5;
     -fx-border-width: 1;
     -fx-border-radius: 4 4 4 4;
     -fx-border-color: darkgrey;
+    -fx-background-color: hsb(240, 8%, 80%);
+    -fx-font-family: monospace;
+}
+
+#directory:hover {
     -fx-background-color: hsb(240, 8%, 85%);
 }
 
 .tree-cell {
     -fx-background-color: hsb(240, 4%, 95%);
+    -fx-text-fill: hsb(240,65%,45%);
 }
 
 .tree-cell:selected {
@@ -52,4 +68,16 @@
 
 .root {
     -fx-background-color: hsb(240, 8%, 95%);
+}
+
+#customFilename {
+    -fx-label-padding: 5;
+    -fx-border-width: 1;
+    -fx-border-radius: 4 4 4 4;
+    -fx-border-color: darkgrey;
+    -fx-background-color: hsb(240, 8%, 80%);
+    -fx-font-family: monospace;
+    -fx-text-fill: hsb(240,65%,45%);
+    -fx-alignment: center;
+    -fx-prompt-text-fill: hsb(240,25%,60%);
 }

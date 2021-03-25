@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -16,6 +17,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 
+// TODO Implement the rest of the optional arguments
+// TODO Implement full refresh on both upload and download
+// TODO Implement manual filename selection
+// TODO Implement measures to protect against race condition
 public class Controller {
     /** the label where the directory is displayed/updated */
     @FXML
@@ -34,6 +39,8 @@ public class Controller {
     private VBox previewContainer;
     @FXML
     private Label feedback;
+    @FXML
+    private TextField customFilename;
 
     private String initialLocalDirectory = null;
     private FileSharerClient client = null;
@@ -47,7 +54,6 @@ public class Controller {
     }
 
     public void initialize() {
-        System.out.println("setting up controller");
     }
 
     public void setInitialLocalDirectory(String d) {
@@ -67,15 +73,17 @@ public class Controller {
         String[] filenames = dir.list();
         Arrays.sort(filenames);
         for (String filename : filenames) {
-            TreeItem<String> entry = new TreeItem<>();
-            entry.setValue(filename);
-            localDirectoryName.getChildren().add(entry);
+            if (!new File(filename).isDirectory()) {
+                TreeItem<String> entry = new TreeItem<>();
+                entry.setValue(filename);
+                localDirectoryName.getChildren().add(entry);
+            }
         }
     }
 
     public void upload(ActionEvent actionEvent) {
         if (null != selectedFilename && localFile) {
-            client.requestUpload(selectedFilename);
+            client.requestUpload(selectedFilename, customFilename.getText());
         } else {
             if (null == selectedFilename) {
                 giveFeedback("No file has been selected!", false);
@@ -93,13 +101,25 @@ public class Controller {
 
     public void download(ActionEvent actionEvent) {
         if (null != selectedFilename && serverFile) {
-            client.requestDownload(selectedFilename, localDirectory.getText());
+            client.requestDownload(selectedFilename, localDirectory.getText(), customFilename.getText());
+        } else {
+            if (null == selectedFilename) {
+                giveFeedback("No file has been selected!", false);
+            } else {
+                giveFeedback("To download, you must select a server file.", false);
+            }
         }
     }
 
     public void delete(ActionEvent actionEvent) {
         if (null != selectedFilename && serverFile) {
             client.requestDelete(selectedFilename);
+        } else {
+            if (null == selectedFilename) {
+                giveFeedback("No file has been selected!", false);
+            } else {
+                giveFeedback("To delete a local file, use your OS file manager.", false);
+            }
         }
     }
 
@@ -129,6 +149,7 @@ public class Controller {
             localFile = true;
             serverFile = false;
 
+
             String previewText = "";
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(temp));
@@ -141,7 +162,6 @@ public class Controller {
             } catch(IOException e) {
                 e.printStackTrace();
             }
-
             preview.setText(previewText);
             previewContainer.getChildren().remove(1);
             previewContainer.getChildren().add(previewPane);
@@ -152,7 +172,9 @@ public class Controller {
             previewContainer.getChildren().remove(1);
             previewContainer.getChildren().add(previewInstructionsContainer);
         }
-
+//        for (TreeItem<String> i : serverDirectoryName.getChildren()) {
+//            // TODO remove selected pseudoclass from all server files
+//        }
     }
 
     public void handleServerTreeClick(MouseEvent mouseEvent) {
@@ -199,7 +221,10 @@ public class Controller {
         directoryChooser.setInitialDirectory(new File(new File(localDirectory.getText()).getParent()));
 
         // update the text of the directory Label to the new chosen directory
-        localDirectory.setText(directoryChooser.showDialog(primaryStage).getPath() + "/");
+        File chosenDirectory = directoryChooser.showDialog(primaryStage);
+        if (null != chosenDirectory) {
+            localDirectory.setText(chosenDirectory.getPath() + "/");
+        }
         refreshLocal();
     }
 }

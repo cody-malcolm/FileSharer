@@ -51,21 +51,21 @@ public class FileSharerClient extends Application {
 
     }
 
-    public void requestUpload(String filename) {
+    public void requestUpload(String filename, String targetName) {
         boolean connected = establishConnection();
         if (connected) {
-            sendRequest("UPLOAD", filename);
+            sendRequest("UPLOAD", filename, targetName);
             processDirectoryResponse();
         } else {
             controller.giveFeedback("A connection was not established.", false);
         }
     }
 
-    public void requestDownload(String filename, String localDirectory) {
+    public void requestDownload(String filename, String localDirectory, String targetName) {
         boolean connected = establishConnection();
         if (connected) {
-            sendRequest("DOWNLOAD", filename);
-            processDownload(filename, localDirectory);
+            sendRequest("DOWNLOAD", filename, "");
+            processDownload(("".equals(targetName) ? filename : targetName), localDirectory);
         } else {
             System.out.println("A connection was not established.");
         }
@@ -74,7 +74,7 @@ public class FileSharerClient extends Application {
     public String requestPreview(String filename) {
         boolean connected = establishConnection();
         if (connected) {
-            sendRequest("DOWNLOAD", filename);
+            sendRequest("DOWNLOAD", filename, "");
             return processPreview();
         } else {
             return "";
@@ -94,7 +94,7 @@ public class FileSharerClient extends Application {
     public void requestDelete(String filename) {
         boolean connected = establishConnection();
         if (connected) {
-            sendRequest("DELETE", filename);
+            sendRequest("DELETE", filename, "");
             processDirectoryResponse();
         } else {
             System.out.println("A connection was not established.");
@@ -163,13 +163,13 @@ public class FileSharerClient extends Application {
         out.flush();
     }
 
-    private void sendRequest(String type, String filename) {
+    private void sendRequest(String type, String filename, String targetName) {
         // TODO add a code to indicate successful file read
         // TODO don't forget about host machine alias
         out.println(type);
 
         File file = new File(filename);
-        out.println(file.getName());
+        out.println(("".equals(targetName) ? file.getName() : targetName));
 
         if (type == "UPLOAD") {
             // read and copy file

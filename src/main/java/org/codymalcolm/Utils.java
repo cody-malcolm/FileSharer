@@ -5,6 +5,7 @@ import java.io.File;
 public class Utils {
     public static String getFilename(String filename) {
         File temp = new File(filename);
+
         int i = 1;
         while (temp.exists()) {
             if (i == 1) {
@@ -18,10 +19,14 @@ public class Utils {
         return filename;
     }
 
-    private static String incrementIteration(String oldFilename) {
-        int extensionStartsAt = oldFilename.lastIndexOf('.');
-        String extension = oldFilename.substring(extensionStartsAt);
-        return oldFilename.substring(0, extensionStartsAt) + "(1)" + extension;
+    private static String incrementIteration(String filename) {
+        int extensionStartsAt = filename.lastIndexOf('.');
+        if (extensionStartsAt != -1) {
+            String extension = filename.substring(extensionStartsAt);
+            return filename.substring(0, extensionStartsAt) + "(1)" + extension;
+        } else {
+            return filename + "(1)";
+        }
     }
 
     private static String incrementIteration(String oldFilename, int i) {

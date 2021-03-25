@@ -95,3 +95,8 @@ gradle run --args="myPC1 src/main/resources/local/" &
 gradle run --args="myPC2 src/main/resources/local/"
 ```
 Gradle version 5.6.4 or newer is required.
+
+## Known Issues
+
+The program will crash and freeze if a binary file (such as an image file) is clicked on.
+This program should only be used with text-based files.
