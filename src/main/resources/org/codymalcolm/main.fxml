@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="org.codymalcolm.Controller"
-          minHeight="800.0" maxHeight="800.0" prefWidth="1200.0">
+          minHeight="800.0" maxHeight="800.0" prefWidth="1200.0" hgap="10" vgap="10">
     <padding>
         <Insets top="10" bottom="10" left="10" right="10" />
     </padding>
@@ -15,12 +15,13 @@
     <Button GridPane.rowIndex="0" GridPane.columnIndex="0" onAction="#upload" styleClass="button">Upload!</Button>
     <Button GridPane.rowIndex="0" GridPane.columnIndex="1" onAction="#download" styleClass="button">Download!</Button>
     <Button GridPane.rowIndex="0" GridPane.columnIndex="2" onAction="#delete" styleClass="button">Delete!</Button>
-    <Label fx:id="localDirectory" GridPane.rowIndex="0" GridPane.columnIndex="3" onMouseClicked="#chooseDirectory" />
+    <Label fx:id="localDirectory" id="directory" GridPane.rowIndex="0" GridPane.columnIndex="3" onMouseClicked="#chooseDirectory" />
+    <Label fx:id="feedback" id="feedback" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="4" prefWidth="1180" />
 
     <SplitPane GridPane.columnSpan="4" GridPane.rowIndex="2" GridPane.columnIndex="0" prefWidth="1180" dividerPositions="0.3,0.6">
-        <VBox styleClass="vboxs" minWidth="100" minHeight="700">
+        <VBox styleClass="vboxs" minWidth="100" minHeight="670">
             <Label styleClass="header" text="Local Directory" />
-            <TreeView styleClass="treeview" onMouseClicked="#handleLocalTreeClick" prefHeight="700">
+            <TreeView styleClass="treeview" onMouseClicked="#handleLocalTreeClick" minHeight="670" maxHeight="670">
                 <root>
                     <TreeItem fx:id="localDirectoryName" expanded="true">
                         <children>
@@ -32,7 +33,7 @@
         </VBox>
         <VBox styleClass="vboxs" minWidth="100">
             <Label styleClass="header" text="Shared Directory" />
-            <TreeView styleClass="treeview" onMouseClicked="#handleServerTreeClick" minHeight="700" maxHeight="700">
+            <TreeView styleClass="treeview" onMouseClicked="#handleServerTreeClick" minHeight="670" maxHeight="670">
                 <root>
                     <TreeItem fx:id="serverDirectoryName" expanded="true">
                         <children>
@@ -44,10 +45,10 @@
         </VBox>
         <VBox fx:id="previewContainer" styleClass="vboxs" minWidth="100">
             <Label styleClass="header" text="File Preview" />
-            <ScrollPane fx:id="previewPane" maxHeight="700" minHeight="700">
+            <ScrollPane fx:id="previewPane" maxHeight="670" minHeight="670">
                 <Label fx:id="preview" />
             </ScrollPane>
-            <VBox fx:id="previewInstructionsContainer" styleClass="center" maxHeight="700" minHeight="700">
+            <VBox fx:id="previewInstructionsContainer" styleClass="center" maxHeight="670" minHeight="670">
                 <Label text="Select a file to see a preview." />
             </VBox>
         </VBox>

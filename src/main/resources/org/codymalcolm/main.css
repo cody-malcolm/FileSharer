@@ -1,26 +1,55 @@
 .header {
     -fx-font-size: 16px;
-    -fx-text-fill: hsb(0,100%,50%);
+    -fx-text-fill: hsb(240,80%,65%);
     -fx-label-padding: 10;
     -fx-font-weight: bold;
 }
 
 .button {
     -fx-min-width: 100;
-    -fx-padding: 3 3 3 3;
-    -fx-margin: 5 5 5 5;
-}
-
-.treeitem {
-    -fx-background-color: hsb(0,50%,50%);
 }
 
 .vboxs {
     -fx-alignment: top-center;
-    -fx-background-color: hsb(0,0%,75%);
+    -fx-background-color: hsb(240,8%,75%);
 }
 
 .center {
     -fx-alignment: center;
-    -fx-background-color: hsb(0,0%,90%);
+    -fx-background-color: hsb(240,8%,90%);
+}
+
+.successMessage {
+    -fx-text-fill: hsb(120, 50%, 50%);
+}
+
+.failureMessage {
+    -fx-text-fill: hsb(0, 65%, 65%);
+}
+
+#feedback {
+    -fx-alignment: center;
+}
+
+/* style the directory label to look like an input field */
+#directory {
+    -fx-min-width: 540;
+    -fx-padding: 3 3 3 3;
+    -fx-border-width: 1;
+    -fx-border-radius: 4 4 4 4;
+    -fx-border-color: darkgrey;
+    -fx-background-color: hsb(240, 8%, 85%);
+}
+
+.tree-cell {
+    -fx-background-color: hsb(240, 4%, 95%);
+}
+
+.tree-cell:selected {
+    -fx-background-color: hsb(240, 65%, 45%);
+    -fx-text-fill: hsb(240,0%,100%);
+}
+
+.root {
+    -fx-background-color: hsb(240, 8%, 95%);
 }

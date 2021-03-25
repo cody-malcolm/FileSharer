@@ -57,7 +57,7 @@ public class FileSharerClient extends Application {
             sendRequest("UPLOAD", filename);
             processDirectoryResponse();
         } else {
-            System.out.println("A connection was not established."); // TODO output these to UI
+            controller.giveFeedback("A connection was not established.", false);
         }
     }
 
@@ -181,7 +181,9 @@ public class FileSharerClient extends Application {
                 while (null != (line = input.readLine())) {
                     out.println(line);
                 }
+                controller.giveFeedback("Uploaded '" + filename + "' successfully!", true);
             } catch(IOException e) {
+                controller.giveFeedback("Something went wrong reading the file.", false);
                 e.printStackTrace();
             }
         }

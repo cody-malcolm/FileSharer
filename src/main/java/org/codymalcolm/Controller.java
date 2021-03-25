@@ -32,6 +32,8 @@ public class Controller {
     private VBox previewInstructionsContainer;
     @FXML
     private VBox previewContainer;
+    @FXML
+    private Label feedback;
 
     private String initialLocalDirectory = null;
     private FileSharerClient client = null;
@@ -74,7 +76,19 @@ public class Controller {
     public void upload(ActionEvent actionEvent) {
         if (null != selectedFilename && localFile) {
             client.requestUpload(selectedFilename);
+        } else {
+            if (null == selectedFilename) {
+                giveFeedback("No file has been selected!", false);
+            } else {
+                giveFeedback("To upload, you must select a local file.", false);
+            }
         }
+    }
+
+    protected void giveFeedback(String s, boolean key) {
+        feedback.setText(s);
+        feedback.getStyleClass().clear();
+        feedback.getStyleClass().add((key ? "successMessage" : "failureMessage"));
     }
 
     public void download(ActionEvent actionEvent) {
@@ -138,6 +152,7 @@ public class Controller {
             previewContainer.getChildren().remove(1);
             previewContainer.getChildren().add(previewInstructionsContainer);
         }
+
     }
 
     public void handleServerTreeClick(MouseEvent mouseEvent) {
