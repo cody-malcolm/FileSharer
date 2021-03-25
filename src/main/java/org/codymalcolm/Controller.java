@@ -7,11 +7,17 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 
 public class Controller {
+    /** the label where the directory is displayed/updated */
     @FXML
     private Label localDirectory;
     @FXML
@@ -23,8 +29,6 @@ public class Controller {
     @FXML
     private ScrollPane previewPane;
     @FXML
-    private Label previewInstructions;
-    @FXML
     private VBox previewInstructionsContainer;
     @FXML
     private VBox previewContainer;
@@ -34,6 +38,11 @@ public class Controller {
     private String selectedFilename = null;
     private boolean localFile = false;
     private boolean serverFile = false;
+    private Stage primaryStage;
+
+    public void setPrimaryStage(Stage s) {
+        primaryStage = s;
+    }
 
     public void initialize() {
         System.out.println("setting up controller");
@@ -63,8 +72,6 @@ public class Controller {
     }
 
     public void upload(ActionEvent actionEvent) {
-        System.out.println(selectedFilename);
-        System.out.println(localFile);
         if (null != selectedFilename && localFile) {
             client.requestUpload(selectedFilename);
         }
@@ -74,11 +81,6 @@ public class Controller {
         if (null != selectedFilename && serverFile) {
             client.requestDownload(selectedFilename, localDirectory.getText());
         }
-    }
-
-    public void dir(ActionEvent actionEvent) {
-        System.out.println(this);
-        client.requestDirectory();
     }
 
     public void delete(ActionEvent actionEvent) {
@@ -147,7 +149,6 @@ public class Controller {
         previewContainer.getChildren().remove(1);
 
         String filePreview = client.requestPreview(filename);
-        System.out.println(filePreview);
         if (!"".equals(filePreview)) {
             preview.setText(filePreview);
             previewContainer.getChildren().add(previewPane);
@@ -168,5 +169,22 @@ public class Controller {
 
     public void clearServerTree() {
         serverDirectoryName.getChildren().clear();
+    }
+
+    /**
+     * Allows the user to select a directory to get testing/training data from. Updates the directory Label text.
+     *
+     * @param mouseEvent not used
+     */
+    public void chooseDirectory(MouseEvent mouseEvent) {
+        // initialize a DirectoryChooser
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+
+        // set the initial directory to show the current selection
+        directoryChooser.setInitialDirectory(new File(new File(localDirectory.getText()).getParent()));
+
+        // update the text of the directory Label to the new chosen directory
+        localDirectory.setText(directoryChooser.showDialog(primaryStage).getPath() + "/");
+        refreshLocal();
     }
 }

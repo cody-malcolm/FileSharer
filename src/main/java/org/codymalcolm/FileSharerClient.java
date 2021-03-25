@@ -38,6 +38,7 @@ public class FileSharerClient extends Application {
             primaryStage.setTitle("File Sharer v1.0");
             primaryStage.setScene(new Scene(root));
             primaryStage.show();
+            controller.setPrimaryStage(primaryStage);
             controller.setClient(this);
             controller.setInitialLocalDirectory(parameters.get(0));
             controller.setup();
@@ -151,17 +152,6 @@ public class FileSharerClient extends Application {
                 while (!"".equals(line = in.readLine())) {
                     controller.addServerFileListing(line);
                 }
-            }
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void processResponse() {
-        String line;
-        try {
-            while (null != (line = in.readLine())) {
-                System.out.println(line);
             }
         } catch(IOException e) {
             e.printStackTrace();

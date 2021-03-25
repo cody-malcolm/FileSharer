@@ -26,7 +26,7 @@ public class FileSharerServer {
                 } // TODO: Does this cause unintended behaviour? don't think it will, but check at end
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Connecting " + numClients);
-                FileSharerServerHandler handler = new FileSharerServerHandler(clientSocket, directory);
+                ClientConnectionHandler handler = new ClientConnectionHandler(clientSocket, directory);
 
                 threads[numClients] = new Thread(handler);
                 threads[numClients++].start();

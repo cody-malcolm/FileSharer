@@ -5,7 +5,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-public class FileSharerServerHandler implements Runnable {
+public class ClientConnectionHandler implements Runnable {
     // TODO don't forget the synchronized stuff
 
     private Socket socket = null;
@@ -13,7 +13,7 @@ public class FileSharerServerHandler implements Runnable {
     private BufferedReader requestInput = null;
     private PrintWriter responseOutput = null;
 
-    public FileSharerServerHandler(Socket socket, File directory) throws IOException {
+    public ClientConnectionHandler(Socket socket, File directory) throws IOException {
         this.socket = socket;
         this.directory = directory;
 
