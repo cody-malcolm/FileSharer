@@ -2,10 +2,7 @@ package org.codymalcolm;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -16,6 +13,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 // TODO Implement the rest of the optional arguments
 // TODO Implement full refresh on both upload and download
@@ -41,6 +39,10 @@ public class Controller {
     private Label feedback;
     @FXML
     private TextField customFilename;
+    @FXML
+    private TreeView<String> localTreeView;
+    @FXML
+    private TreeView<String> serverTreeView;
 
     private String initialLocalDirectory = null;
     private FileSharerClient client = null;
@@ -48,6 +50,8 @@ public class Controller {
     private boolean localFile = false;
     private boolean serverFile = false;
     private Stage primaryStage;
+    private SelectionModel localSelectionModel;
+    private SelectionModel serverSelectionModel;
 
     public void setPrimaryStage(Stage s) {
         primaryStage = s;
@@ -63,6 +67,8 @@ public class Controller {
     public void setup() {
         localDirectory.setText(initialLocalDirectory);
         previewContainer.getChildren().remove(1);
+        localSelectionModel = localTreeView.getSelectionModel();
+        serverSelectionModel = serverTreeView.getSelectionModel();
     }
 
     public void refreshLocal() {
@@ -141,6 +147,7 @@ public class Controller {
     }
 
     public void handleLocalTreeClick(MouseEvent mouseEvent) {
+        serverSelectionModel.clearSelection();
         String filename = localDirectory.getText() + parseTreeSelection(mouseEvent.getTarget().toString());
 
         File temp = new File(filename);
@@ -229,14 +236,15 @@ public class Controller {
     }
 
     public void highlightServerFile(String filename) {
-//        serverDirectoryName.getChildren().forEach(new Consumer<TreeItem<String>>() {
-//            @Override
-//            public void accept(TreeItem<String> stringTreeItem) {
-//                if(stringTreeItem.getValue().equals(filename)) {
-//                    System.out.println(stringTreeItem);
-//                    // TODO Need to apply pseudoclass "selected" to stringTreeItem
-//                };
-//            }
-//        });
+        localSelectionModel.clearSelection();
+        serverSelectionModel.clearSelection();
+        serverDirectoryName.getChildren().forEach(new Consumer<TreeItem<String>>() {
+            @Override
+            public void accept(TreeItem<String> stringTreeItem) {
+                if(stringTreeItem.getValue().equals(filename)) {
+                    serverSelectionModel.select(serverTreeView.getRow(stringTreeItem));
+                };
+            }
+        });
     }
 }

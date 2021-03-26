@@ -48,10 +48,19 @@ The base requirements of the project are as follows:
 
 - Clients can request the deletion of files stored in the shared directory.
 
+- The server logs the following events to both the console and a log file:
+    - When a connection is established (including the IP of the client)
+    - When a request is received (including type of request, client alias, and client IP)
+    - When a request has been fulfilled (including details about the request, client alias, and client IP)
+    - When a connection is terminated
+    
+- If the log file is not found, a new one will be created. Additionally, the log records the time the event occurs.
+
 - The server can optionally take arguments for the directory name (default `shared`) and port (default `9001`) as arguments.
   Whether a custom directory is provided or not, if the directory does not exist, it will be created during startup.
   
 - The client can optionally take arguments for both the hostname (default `localhost`) and port (default `9001`).
+  
 - When uploading or downloading a file, the client can optionally provide a new name for the file.
 If this is not done, the filename will default to the current name. 
   In either case, if a file with the requested name already exists in the destination directory,

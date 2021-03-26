@@ -109,26 +109,31 @@ public class ClientConnectionHandler implements Runnable {
             String filename = requestInput.readLine();
             String path = "shared/" + directory.getName() + "/" + filename;
             File file = new File(path);
-            if (!file.exists()) {
-                sendResponse("404", "That file doesn't exist");
-                log("The requested file was not found in the shared directory.");
-                return;
-            }
-            String content = "";
-            // read and copy file
-            try {
-                BufferedReader input = new BufferedReader(new FileReader(file));
-                int numLines = 0;
-                String line;
 
-                while (null != (line = input.readLine())) {
-                    content += line + "\r\n";
-                    numLines++;
+            String content = "";
+
+            if (!file.exists()) {
+                content += "1\r\nThe selected file was not found in the shared directory.\r\n";
+                content += ("201\r\n" + getDirectoryContents());
+                sendResponse("404", content);
+                log("The requested file was not found in the shared directory.");
+            } else {
+                // read and copy file
+                try {
+                    BufferedReader input = new BufferedReader(new FileReader(file));
+                    int numLines = 0;
+                    String line;
+
+                    while (null != (line = input.readLine())) {
+                        content += line + "\r\n";
+                        numLines++;
+                    }
+                    content = numLines + "\r\n" + content;
+                } catch(IOException e) {
+                    e.printStackTrace();
                 }
-                content = numLines + "\r\n" + content;
-            } catch(IOException e) {
-                e.printStackTrace();
             }
+
             content += ("201\r\n" + getDirectoryContents());
             sendResponse("203", content);
             log(filename + " was sent to " + alias);

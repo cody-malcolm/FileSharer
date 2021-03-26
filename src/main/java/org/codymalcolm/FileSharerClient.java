@@ -112,14 +112,22 @@ public class FileSharerClient extends Application {
             if ((line = in.readLine()).equals("203")) {
                 int numLines = Integer.parseInt(in.readLine());
                 int i = 0;
-                while((i++ < numLines)  && in.ready() && (null != (line = in.readLine()))) {
+                while((i++ < numLines) && in.ready() && (null != (line = in.readLine()))) {
                     response += line + "\r\n";
                 }
                 controller.refreshLocal();
                 processDirectoryResponse(filename);
                 return response;
+            } else if ("404".equals(line)) {
+                System.out.println(line);
+                line = in.readLine(); // discard "1"
+                System.out.println(line);
+                controller.giveFeedback(in.readLine() , false);
+                processDirectoryResponse();
+                return response;
             } else {
-                return "";
+                System.out.println(line);
+                return response;
             }
         } catch(IOException e) {
             e.printStackTrace();
@@ -141,10 +149,15 @@ public class FileSharerClient extends Application {
                 writer.flush();
                 writer.close();
                 controller.refreshLocal();
+                processDirectoryResponse(new File(filename).getName());
+            } else if ("404".equals(line)) {
+                System.out.println(line);
+                line = in.readLine(); // discard "1"
+                System.out.println(line);
+                controller.giveFeedback(in.readLine() , false);
                 processDirectoryResponse();
             } else {
-                // TODO Could give a more detailed error message here
-                System.out.println("Did not receive the file");
+                System.out.println(line);
             }
         } catch(IOException e) {
             e.printStackTrace();
@@ -154,18 +167,18 @@ public class FileSharerClient extends Application {
     private void processDirectoryResponse(String filename) {
         String line;
         try {
-            if ("201".equals(line = in.readLine())) {
+            line = in.readLine();
+            System.out.println(line);
+            if ("201".equals(line)) {
                 controller.clearServerTree();
                 String sharedDirectoryName = (line = in.readLine());
                 controller.updateServerDirectory(sharedDirectoryName);
                 while (!"".equals(line = in.readLine())) {
                     controller.addServerFileListing(line);
                 }
-                if (!"".equals(filename)) {
-                    controller.highlightServerFile(filename);
-                }
+                controller.highlightServerFile(filename);
             } else {
-                System.out.println(line);
+                controller.highlightServerFile("");
             }
         } catch(IOException e) {
             e.printStackTrace();
