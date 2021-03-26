@@ -44,7 +44,6 @@ public class FileSharerClient extends Application {
             controller.setClient(this);
             controller.setInitialLocalDirectory(parameters.get(1));
             controller.setup();
-            controller.refreshLocal();
             alias = parameters.get(0);
             requestDirectory();
 
@@ -70,7 +69,7 @@ public class FileSharerClient extends Application {
             sendRequest("DOWNLOAD", filename, "");
             processDownload(("".equals(targetName) ? filename : targetName), localDirectory);
         } else {
-            System.out.println("A connection was not established.");
+            controller.giveFeedback("A connection was not established.", false);
         }
     }
 
@@ -90,7 +89,7 @@ public class FileSharerClient extends Application {
             sendRequest("DIR");
             processDirectoryResponse();
         } else {
-            System.out.println("A connection was not established.");
+            controller.giveFeedback("A connection was not established.", false);
         }
     }
 
@@ -99,8 +98,9 @@ public class FileSharerClient extends Application {
         if (connected) {
             sendRequest("DELETE", filename, "");
             processDirectoryResponse();
+            controller.highlightServerFile("");
         } else {
-            System.out.println("A connection was not established.");
+            controller.giveFeedback("A connection was not established.", false);
         }
     }
 
@@ -115,18 +115,16 @@ public class FileSharerClient extends Application {
                 while((i++ < numLines) && in.ready() && (null != (line = in.readLine()))) {
                     response += line + "\r\n";
                 }
-                controller.refreshLocal();
-                processDirectoryResponse(filename);
+                processDirectoryResponse();
+                controller.highlightServerFile(filename);
                 return response;
             } else if ("404".equals(line)) {
-                System.out.println(line);
                 line = in.readLine(); // discard "1"
-                System.out.println(line);
                 controller.giveFeedback(in.readLine() , false);
                 processDirectoryResponse();
+                controller.highlightServerFile("");
                 return response;
             } else {
-                System.out.println(line);
                 return response;
             }
         } catch(IOException e) {
@@ -148,36 +146,13 @@ public class FileSharerClient extends Application {
                 }
                 writer.flush();
                 writer.close();
-                controller.refreshLocal();
-                processDirectoryResponse(new File(filename).getName());
+                processDirectoryResponse();
+
+                controller.highlightServerFile(new File(filename).getName());
             } else if ("404".equals(line)) {
-                System.out.println(line);
                 line = in.readLine(); // discard "1"
-                System.out.println(line);
                 controller.giveFeedback(in.readLine() , false);
                 processDirectoryResponse();
-            } else {
-                System.out.println(line);
-            }
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void processDirectoryResponse(String filename) {
-        String line;
-        try {
-            line = in.readLine();
-            System.out.println(line);
-            if ("201".equals(line)) {
-                controller.clearServerTree();
-                String sharedDirectoryName = (line = in.readLine());
-                controller.updateServerDirectory(sharedDirectoryName);
-                while (!"".equals(line = in.readLine())) {
-                    controller.addServerFileListing(line);
-                }
-                controller.highlightServerFile(filename);
-            } else {
                 controller.highlightServerFile("");
             }
         } catch(IOException e) {
@@ -186,8 +161,21 @@ public class FileSharerClient extends Application {
     }
 
     private void processDirectoryResponse() {
-        processDirectoryResponse("");
+        String line;
+        try {
+            if ("201".equals(line = in.readLine())) {
+                controller.clearServerTree();
+                String sharedDirectoryName = (line = in.readLine());
+                controller.updateServerDirectory(sharedDirectoryName);
+                while (!"".equals(line = in.readLine())) {
+                    controller.addServerFileListing(line);
+                }
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
+
 
     private void sendRequest(String type) {
         out.println(alias);

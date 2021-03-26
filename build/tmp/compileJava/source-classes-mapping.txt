@@ -1,5 +1,7 @@
 org/codymalcolm/Controller.java
  org.codymalcolm.Controller
+ org.codymalcolm.Controller$1
+ org.codymalcolm.Controller$2
 org/codymalcolm/FileSharerServer.java
  org.codymalcolm.FileSharerServer
 org/codymalcolm/FileSharerClient.java

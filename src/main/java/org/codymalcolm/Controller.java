@@ -1,7 +1,9 @@
 package org.codymalcolm;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -16,9 +18,10 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 // TODO Implement the rest of the optional arguments
-// TODO Implement full refresh on both upload and download
-// TODO Implement manual filename selection
 // TODO Implement measures to protect against race condition
+// TODO Upload should stay highlighted
+// TODO Download should stay highlighted, download needs to give feedback on client
+// TODO Delete needs to give feedback on client
 public class Controller {
     /** the label where the directory is displayed/updated */
     @FXML
@@ -69,9 +72,27 @@ public class Controller {
         previewContainer.getChildren().remove(1);
         localSelectionModel = localTreeView.getSelectionModel();
         serverSelectionModel = serverTreeView.getSelectionModel();
+        refreshLocal();
     }
 
-    public void refreshLocal() {
+    private void refreshLocal(String filename) {
+        refreshLocal();
+        if (null != filename) {
+            localDirectoryName.getChildren().forEach(new Consumer<TreeItem<String>>() {
+                @Override
+                public void accept(TreeItem<String> stringTreeItem) {
+                    if(stringTreeItem.getValue().equals(filename)) {
+                        localSelectionModel.select(localTreeView.getRow(stringTreeItem));
+                    };
+                }
+            });
+        }
+    }
+
+    private void refreshLocal() {
+
+        localSelectionModel.clearSelection();
+        serverSelectionModel.clearSelection();
         localDirectoryName.getChildren().clear();
         String directory = localDirectory.getText();
         localDirectoryName.setValue(directory);
@@ -97,6 +118,7 @@ public class Controller {
                 giveFeedback("To upload, you must select a local file.", false);
             }
         }
+        refreshLocal();
     }
 
     protected void giveFeedback(String s, boolean key) {
@@ -115,6 +137,7 @@ public class Controller {
                 giveFeedback("To download, you must select a server file.", false);
             }
         }
+        refreshLocal();
     }
 
     public void delete(ActionEvent actionEvent) {
@@ -127,6 +150,7 @@ public class Controller {
                 giveFeedback("To delete a local file, use your OS file manager.", false);
             }
         }
+        refreshLocal();
     }
 
     public void setClient(FileSharerClient client) {
@@ -148,14 +172,14 @@ public class Controller {
 
     public void handleLocalTreeClick(MouseEvent mouseEvent) {
         serverSelectionModel.clearSelection();
-        String filename = localDirectory.getText() + parseTreeSelection(mouseEvent.getTarget().toString());
-
-        File temp = new File(filename);
+        String path = localDirectory.getText() + parseTreeSelection(mouseEvent.getTarget().toString());
+        File temp = new File(path);
+        String filename = null;
         if (temp.exists()) {
-            selectedFilename = filename;
+            selectedFilename = path;
             localFile = true;
             serverFile = false;
-
+            filename = temp.getName();
 
             String previewText = "";
             try {
@@ -179,9 +203,8 @@ public class Controller {
             previewContainer.getChildren().remove(1);
             previewContainer.getChildren().add(previewInstructionsContainer);
         }
-//        for (TreeItem<String> i : serverDirectoryName.getChildren()) {
-//            // TODO remove selected pseudoclass from all server files
-//        }
+        client.requestDirectory();
+        refreshLocal(filename);
     }
 
     public void handleServerTreeClick(MouseEvent mouseEvent) {
@@ -190,15 +213,19 @@ public class Controller {
         localFile = false;
         serverFile = true;
 
-        previewContainer.getChildren().remove(1);
+        ObservableList<Node> previewNodes = previewContainer.getChildren();
+        if (previewNodes.size() > 1) {
+            previewNodes.remove(1);
+        }
 
         String filePreview = client.requestPreview(filename);
         if (!"".equals(filePreview)) {
             preview.setText(filePreview);
-            previewContainer.getChildren().add(previewPane);
+            previewNodes.add(previewPane);
         } else {
-            previewContainer.getChildren().add(previewInstructionsContainer);
+            previewNodes.add(previewInstructionsContainer);
         }
+
     }
 
     public void updateServerDirectory(String sharedDirectoryName) {
@@ -238,6 +265,16 @@ public class Controller {
     public void highlightServerFile(String filename) {
         localSelectionModel.clearSelection();
         serverSelectionModel.clearSelection();
+
+        /* This is backup code in case a certain bug crops up again */
+//        ObservableList<TreeItem<String>> serverItems = serverDirectoryName.getChildren();
+//        for (int i = 0; i < serverItems.size(); i++) {
+//            TreeItem<String> item = serverItems.get(i);
+//            if (item.getValue().equals(filename)) {
+//                serverSelectionModel.select(serverTreeView.getRow(item));
+//            }
+//        }
+        /* the following lines of code do the same thing, but seem more likely to throw an error if the bug comes back */
         serverDirectoryName.getChildren().forEach(new Consumer<TreeItem<String>>() {
             @Override
             public void accept(TreeItem<String> stringTreeItem) {

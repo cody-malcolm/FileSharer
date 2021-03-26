@@ -23,7 +23,7 @@
     <SplitPane GridPane.columnSpan="4" GridPane.rowIndex="2" GridPane.columnIndex="0" prefWidth="1180" dividerPositions="0.3,0.6">
         <VBox styleClass="vboxs" minWidth="100" minHeight="660">
             <Label styleClass="header" text="Local Directory" />
-            <TreeView styleClass="treeview" onMouseClicked="#handleLocalTreeClick" minHeight="660" maxHeight="660">
+            <TreeView fx:id="localTreeView" styleClass="treeview" onMouseClicked="#handleLocalTreeClick" minHeight="660" maxHeight="660">
                 <root>
                     <TreeItem fx:id="localDirectoryName" expanded="true">
                         <children>
@@ -35,7 +35,7 @@
         </VBox>
         <VBox styleClass="vboxs" minWidth="100">
             <Label styleClass="header" text="Shared Directory" />
-            <TreeView styleClass="treeview" onMouseClicked="#handleServerTreeClick" minHeight="660" maxHeight="660">
+            <TreeView fx:id="serverTreeView" styleClass="treeview" onMouseClicked="#handleServerTreeClick" minHeight="660" maxHeight="660">
                 <root>
                     <TreeItem fx:id="serverDirectoryName" expanded="true">
                         <children>
