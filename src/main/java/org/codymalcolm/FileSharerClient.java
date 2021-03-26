@@ -13,9 +13,7 @@ import java.util.List;
 public class FileSharerClient extends Application {
     private BufferedReader in;
     private PrintWriter out;
-//    private String hostname = "104.158.13.126";
-    private String hostname = "localhost";
-//    private String uri;
+    private String hostname = "localhost"; // my IP "104.158.13.126"
     private int port = 9001;
     private Controller controller;
     private String alias;
@@ -27,10 +25,25 @@ public class FileSharerClient extends Application {
     @Override
     public void start(Stage primaryStage) {
         List<String> parameters = getParameters().getRaw();
-        if (parameters.size() < 2) {
-            System.out.println("No local directory provided");
+        int numParams = parameters.size();
+        if (numParams < 2) {
+            System.out.println("Note: Usage is 'gradle run --args=\"<alias> <local-directory>\"'. Aborting startup.");
             System.exit(0);
         }
+
+        if (numParams >= 3) {
+            hostname = parameters.get(2);
+        }
+
+        if (numParams > 3) {
+            try {
+                port = Integer.parseInt(parameters.get(3));
+            } catch(NumberFormatException e) {
+                System.out.println("Note: Please not, correct usage is gradle run --args=\"<alias> <local-directory> <hostname> <port>\"");
+                System.out.println("The port was not understood, using default.");
+            }
+        }
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
         Parent root;
         try {
