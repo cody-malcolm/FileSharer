@@ -23,9 +23,8 @@ public class FileSharerServer {
             while (true) {
                 if (numClients == MAX_CLIENTS) {
                     numClients = 0;
-                } // TODO: Does this cause unintended behaviour? don't think it will, but check at end
+                }
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Connecting " + numClients);
                 ClientConnectionHandler handler = new ClientConnectionHandler(clientSocket, directory);
 
                 threads[numClients] = new Thread(handler);
@@ -41,7 +40,9 @@ public class FileSharerServer {
         String sharedFolderName = "shared/";
         // gradle command - 'gradle startServer --args="<name>"'
         if (args.length > 0) {
-            sharedFolderName = args[0];
+            sharedFolderName += args[0];
+        } else {
+            sharedFolderName += "shared";
         }
         File directory = new File(sharedFolderName);
         if (!directory.exists()) {

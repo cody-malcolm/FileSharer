@@ -13,10 +13,12 @@ import java.util.List;
 public class FileSharerClient extends Application {
     private BufferedReader in;
     private PrintWriter out;
-    private String hostname = "104.158.13.126";
+//    private String hostname = "104.158.13.126";
+    private String hostname = "localhost";
 //    private String uri;
     private int port = 9001;
     private Controller controller;
+    private String alias;
 
     public static void main(String[] args) {
         launch(args);
@@ -25,7 +27,7 @@ public class FileSharerClient extends Application {
     @Override
     public void start(Stage primaryStage) {
         List<String> parameters = getParameters().getRaw();
-        if (parameters.isEmpty()) {
+        if (parameters.size() < 2) {
             System.out.println("No local directory provided");
             System.exit(0);
         }
@@ -40,9 +42,10 @@ public class FileSharerClient extends Application {
             primaryStage.show();
             controller.setPrimaryStage(primaryStage);
             controller.setClient(this);
-            controller.setInitialLocalDirectory(parameters.get(0));
+            controller.setInitialLocalDirectory(parameters.get(1));
             controller.setup();
             controller.refreshLocal();
+            alias = parameters.get(0);
             requestDirectory();
 
         } catch (IOException e) {
@@ -75,7 +78,7 @@ public class FileSharerClient extends Application {
         boolean connected = establishConnection();
         if (connected) {
             sendRequest("DOWNLOAD", filename, "");
-            return processPreview();
+            return processPreview(filename);
         } else {
             return "";
         }
@@ -101,15 +104,19 @@ public class FileSharerClient extends Application {
         }
     }
 
-    private String processPreview() {
+    private String processPreview(String filename) {
         String response = "";
         String line;
 
         try {
-            if ((line = in.readLine()).equals("201")) {
-                while(in.ready() && (null != (line = in.readLine()))) {
+            if ((line = in.readLine()).equals("203")) {
+                int numLines = Integer.parseInt(in.readLine());
+                int i = 0;
+                while((i++ < numLines)  && in.ready() && (null != (line = in.readLine()))) {
                     response += line + "\r\n";
                 }
+                controller.refreshLocal();
+                processDirectoryResponse(filename);
                 return response;
             } else {
                 return "";
@@ -122,17 +129,19 @@ public class FileSharerClient extends Application {
 
     private void processDownload(String filename, String localDirectory) {
         String line;
-
         try {
-            if ((line = in.readLine()).equals("201")) {
+            if ((line = in.readLine()).equals("203")) {
                 filename = Utils.getFilename(localDirectory + filename);
+                int numLines = Integer.parseInt(in.readLine());
+                int i = 0;
                 PrintWriter writer = new PrintWriter(new File(filename));
-                while(in.ready() && (null != (line = in.readLine()))) {
+                while((i++ < numLines)  && in.ready() && (null != (line = in.readLine()))) {
                     writer.println(line);
                 }
                 writer.flush();
                 writer.close();
                 controller.refreshLocal();
+                processDirectoryResponse();
             } else {
                 // TODO Could give a more detailed error message here
                 System.out.println("Did not receive the file");
@@ -142,7 +151,7 @@ public class FileSharerClient extends Application {
         }
     }
 
-    private void processDirectoryResponse() {
+    private void processDirectoryResponse(String filename) {
         String line;
         try {
             if ("201".equals(line = in.readLine())) {
@@ -152,20 +161,30 @@ public class FileSharerClient extends Application {
                 while (!"".equals(line = in.readLine())) {
                     controller.addServerFileListing(line);
                 }
+                if (!"".equals(filename)) {
+                    controller.highlightServerFile(filename);
+                }
+            } else {
+                System.out.println(line);
             }
         } catch(IOException e) {
             e.printStackTrace();
         }
     }
 
+    private void processDirectoryResponse() {
+        processDirectoryResponse("");
+    }
+
     private void sendRequest(String type) {
+        out.println(alias);
         out.println(type);
         out.flush();
     }
 
     private void sendRequest(String type, String filename, String targetName) {
         // TODO add a code to indicate successful file read
-        // TODO don't forget about host machine alias
+        out.println(alias);
         out.println(type);
 
         File file = new File(filename);

@@ -227,4 +227,16 @@ public class Controller {
         }
         refreshLocal();
     }
+
+    public void highlightServerFile(String filename) {
+//        serverDirectoryName.getChildren().forEach(new Consumer<TreeItem<String>>() {
+//            @Override
+//            public void accept(TreeItem<String> stringTreeItem) {
+//                if(stringTreeItem.getValue().equals(filename)) {
+//                    System.out.println(stringTreeItem);
+//                    // TODO Need to apply pseudoclass "selected" to stringTreeItem
+//                };
+//            }
+//        });
+    }
 }
