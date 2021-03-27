@@ -1,40 +1,14 @@
 package org.codymalcolm;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.Scanner;
 
 public class FileSharerServer {
+    private static FileSharerServer server = new FileSharerServer();
+    private static File directory;
     private static int port = 9001;
-    final private static int MAX_CLIENTS = 5;
-
-    private ServerSocket serverSocket = null;
-    private Thread[] threads = null;
-    private int clientNo = 0;
-
-    public FileSharerServer(File directory) {
-        try {
-            serverSocket = new ServerSocket(port);
-            System.out.print("Server is running. ");
-            System.out.println("Listening to port: " + port);
-            threads = new Thread[MAX_CLIENTS];
-            // create a Thread to handle each of the clients
-            while (true) {
-                if (clientNo == MAX_CLIENTS) {
-                    clientNo = 0;
-                }
-                Socket clientSocket = serverSocket.accept();
-                ClientConnectionHandler handler = new ClientConnectionHandler(clientSocket, directory);
-
-                threads[clientNo] = new Thread(handler);
-                threads[clientNo++].start();
-            }
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-    }
-
+    private boolean running = false;
+    private ListenerThread listenerThread;
 
     public static void main(String[] args) {
         String sharedFolderName = "shared/";
@@ -53,11 +27,65 @@ public class FileSharerServer {
                 System.out.println("The port was not understood, using default.");
             }
         }
-        File directory = new File(sharedFolderName);
+        directory = new File(sharedFolderName);
         if (!directory.exists()) {
             System.out.println("Shared folder not found. Creating new shared folder...");
             directory.mkdir();
         }
-        new FileSharerServer(directory);
+
+        printCommands();
+
+        Scanner scanner = new Scanner(System.in);
+        boolean exit = false;
+        while (!exit) {
+            // get command
+            String command = scanner.nextLine();
+            if (command.regionMatches(true, 0, "start", 0, 5)) {
+                startServer();
+            } else if (command.regionMatches(true, 0, "stop", 0, 4)) {
+                stopServer();
+            } else if (command.regionMatches(true, 0, "status", 0, 6)) {
+                System.out.println("The server is " + (server.running ? "" : "not") + " running.");
+            } else if (command.regionMatches(true, 0, "help", 0, 4)) {
+                printCommands();
+            } else if (command.regionMatches(true, 0, "quit", 0, 4)) {
+                stopServer();
+                exit = true;
+            } else {
+                System.out.println("That command was not recognized.");
+                printCommands();
+            }
+        }
+
+        scanner.close();
+        System.out.println("Closing the application. Goodbye.");
+        System.exit(0);
     }
+
+    private static void stopServer() {
+        if (server.running) {
+            server.listenerThread.closeSocket();
+            server.running = false;
+        }
+    }
+
+    private static void startServer() {
+        if (!server.running) {
+            server.listenerThread = new ListenerThread("Listener", directory, port);
+            server.listenerThread.start();
+            server.running = true;
+        } else {
+            System.out.println("The server is already running.");
+        }
+    }
+
+    private static void printCommands() {
+        System.out.println("          ------------\r\n          | Commands |\r\n          ------------");
+        System.out.println("start   - starts the server");
+        System.out.println("stop    - stops the server");
+        System.out.println("status  - prints the status of the server");
+        System.out.println("help    - prints a list of commands");
+        System.out.println("quit    - shuts down the application\r\n");
+    }
+
 }

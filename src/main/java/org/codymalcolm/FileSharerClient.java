@@ -13,7 +13,7 @@ import java.util.List;
 public class FileSharerClient extends Application {
     private BufferedReader in;
     private PrintWriter out;
-    private String hostname = "localhost"; // my IP "104.158.13.126"
+    private String hostname = "localhost";
     private int port = 9001;
     private Controller controller;
     private String alias;
@@ -72,15 +72,13 @@ public class FileSharerClient extends Application {
             sendRequest("UPLOAD", filename, targetName);
             processUploadResponse(filename);
             processDirectoryResponse();
-        } else {
-            controller.giveFeedback("A connection was not established.", false);
         }
     }
 
     private void processUploadResponse(String filename) {
         try {
             if (in.readLine().equals("202")) {
-                controller.giveFeedback("'" + filename + "' was uploaded successfully.", true);
+                controller.giveFeedback("'" + new File(filename).getName() + "' was uploaded successfully.", true);
                 in.readLine(); // discard next line
             } else {
                 controller.giveFeedback(in.readLine(), false);
@@ -97,8 +95,6 @@ public class FileSharerClient extends Application {
             sendRequest("DOWNLOAD", filename, "");
             processDownloadResponse(("".equals(targetName) ? filename : targetName), localDirectory);
             processDirectoryResponse(filename);
-        } else {
-            controller.giveFeedback("A connection was not established.", false);
         }
     }
 
@@ -119,8 +115,6 @@ public class FileSharerClient extends Application {
         if (connected) {
             sendRequest("DIR");
             processDirectoryResponse();
-        } else {
-            controller.giveFeedback("A connection was not established.", false);
         }
     }
 
@@ -130,8 +124,6 @@ public class FileSharerClient extends Application {
             sendRequest("DELETE", filename, "");
             processDeleteResponse(filename);
             processDirectoryResponse();
-        } else {
-            controller.giveFeedback("A connection was not established.", false);
         }
     }
 
@@ -187,7 +179,7 @@ public class FileSharerClient extends Application {
                 }
                 writer.flush();
                 writer.close();
-                controller.giveFeedback("'" + filename + "' was successfully downloaded.", true);
+                controller.giveFeedback("'" + new File(filename).getName() + "' was successfully downloaded.", true);
             } else if ("403".equals(line)) {
                 controller.giveFeedback(in.readLine() , false);
                 controller.giveFeedback("There was an error trying to download " + filename, false);
@@ -214,8 +206,6 @@ public class FileSharerClient extends Application {
                     controller.addServerFileListing(line);
                 }
                 if (!"".equals(selectedFilename)) {
-//                    String selected = new File(selectedFilename).getName();
-                    System.out.println("This is being run");
                     controller.highlightServerFile(selectedFilename);
                 }
             }
@@ -268,9 +258,12 @@ public class FileSharerClient extends Application {
 
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream());
+            controller.giveFeedback("", true);
             return true;
 
         } catch(IOException e) {
+            controller.clearServerTree();
+            controller.giveFeedback("A connection was not established.", false);
             return false;
         }
     }

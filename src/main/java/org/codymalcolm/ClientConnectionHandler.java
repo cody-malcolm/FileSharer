@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Date;
 
 public class ClientConnectionHandler implements Runnable {
-    // TODO don't forget the synchronized stuff
 
     private Socket socket = null;
     private File directory = null;
@@ -58,19 +57,21 @@ public class ClientConnectionHandler implements Runnable {
 
             // initialize the PrintWriter variable
             PrintWriter output = null;
+            synchronized (this) {
+                // if there is already a log.txt file
+                if (file.exists()) {
+                    // initialize the PrintWriter to append to the existing file
+                    output = new PrintWriter(new FileOutputStream(file, true));
+                } else {
+                    // initialise the PrintWriter to append to a new file
+                    output = new PrintWriter(file);
+                }
 
-            // if there is already a log.txt file
-            if (file.exists()) {
-                // initialize the PrintWriter to append to the existing file
-                output = new PrintWriter(new FileOutputStream(file, true));
-            } else {
-                // initialise the PrintWriter to append to a new file
-                output = new PrintWriter(file);
+                // append the message to the file and close the PrintWriter
+                output.append(new Date() + ": " + message + "\r\n");
+                output.close();
             }
 
-            // append the message to the file and close the PrintWriter
-            output.append(new Date() + ": " + message + "\r\n");
-            output.close();
         } catch(IOException e) {
             e.printStackTrace();
         }
@@ -221,10 +222,10 @@ public class ClientConnectionHandler implements Runnable {
 
                 // copy successful
                 response += "202\r\n0\r\n";
-                log(alias + " uploaded " + new File(filename).getName() + ".");
+                log(alias + " uploaded " + filename.substring(7) + ".");
             } catch(IOException e) {
                 // copy unsuccessful
-                response += "402\r\nThere was an error uploading " + targetName + " to the server.\r\n";
+                response += "402\r\nThere was an error uploading '" + targetName + "' to the server.\r\n";
                 log("There was an error uploading " + targetName  + " from " + alias + ".");
 
                 e.printStackTrace();
@@ -235,7 +236,7 @@ public class ClientConnectionHandler implements Runnable {
             }
         } catch(IOException e) {
             // copy unsuccessful
-            response += "402\r\nThere was an error uploading " + targetName + " to the server.\r\n";
+            response += "402\r\nThere was an error uploading '" + targetName + "' to the server.\r\n";
             log("An error occurred when creating file named " + filename + ".");
 
             e.printStackTrace();
@@ -266,7 +267,7 @@ public class ClientConnectionHandler implements Runnable {
         File file = new File(path);
 
         if (!file.exists()) {
-            response += "403\r\n" + filename + " was not found in the shared directory.\r\n";
+            response += "403\r\n'" + filename + "' was not found in the shared directory.\r\n";
             log("The requested file was not found in the shared directory.");
         } else {
             // read and copy file
@@ -292,7 +293,7 @@ public class ClientConnectionHandler implements Runnable {
                 response = "203\r\n" + numLines + "\r\n" + response;
 
                 // log the successful download
-                log(filename + " was sent to " + alias);
+                log(directory.getName() + "/" + filename + " was sent to " + alias);
             } catch(IOException e) {
                 // there was some error, prepend the metadata (response code, error message) to the response
                 response = "403\r\nThere was an error copying the file contents\r\n" + response;
@@ -326,7 +327,7 @@ public class ClientConnectionHandler implements Runnable {
 
         if (file.exists()) {
             file.delete();
-            log(filename + " was deleted.");
+            log(directory.getName() + "/" + filename + " was deleted.");
             response += ("204\r\n0\r\n");
         } else {
             log("The requested file was not found in the shared directory.");

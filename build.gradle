@@ -28,6 +28,7 @@ test {
 task startServer(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'org.codymalcolm.FileSharerServer'
+    standardInput = System.in
 }
 
 mainClassName = 'org.codymalcolm.FileSharerClient'

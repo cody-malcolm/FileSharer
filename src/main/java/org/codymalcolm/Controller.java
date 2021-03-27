@@ -18,9 +18,6 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 // TODO Implement measures to protect against race condition
-// TODO Upload should stay highlighted
-// TODO Download should stay highlighted, download needs to give feedback on client
-// TODO Delete needs to give feedback on client
 public class Controller {
     /** the label where the directory is displayed/updated */
     @FXML
@@ -240,6 +237,7 @@ public class Controller {
 
     public void clearServerTree() {
         serverDirectoryName.getChildren().clear();
+        serverDirectoryName.setValue("");
     }
 
     /**
@@ -265,7 +263,6 @@ public class Controller {
     public void highlightServerFile(String filename) {
         localSelectionModel.clearSelection();
         serverSelectionModel.clearSelection();
-        System.out.println(filename);
 
         /* This is backup code in case a certain bug crops up again */
 //        ObservableList<TreeItem<String>> serverItems = serverDirectoryName.getChildren();
@@ -279,7 +276,6 @@ public class Controller {
         serverDirectoryName.getChildren().forEach(new Consumer<TreeItem<String>>() {
             @Override
             public void accept(TreeItem<String> stringTreeItem) {
-                System.out.println(stringTreeItem.getValue() + " " + filename + " " + stringTreeItem.getValue().equals(filename));
                 if(stringTreeItem.getValue().equals(filename)) {
                     serverSelectionModel.select(serverTreeView.getRow(stringTreeItem));
                 };

@@ -6,7 +6,8 @@ Cody Malcolm 100753739
 
 ## Project Information
 
-This application consists of a Server and Client to facilitate file sharing. The Server is implemented in Java and the client is implemented in JavaFX.
+This application consists of a Server and Client to facilitate the sharing of text-based files. The Server is 
+implemented in Java and the client is implemented in JavaFX.
 
 ## Requirements
 
@@ -48,6 +49,10 @@ The base requirements of the project are as follows:
 
 - Clients can request the deletion of files stored in the shared directory.
 
+- Feedback is provided on the client UI for most successful and unsuccessful actions (as appropriate)
+
+- The server application can be controlled via the command line with basic commands.
+
 - The server logs the following events to both the console and a log file:
     - When a connection is established (including the IP of the client)
     - When a request is received (including type of request, client alias, and client IP)
@@ -66,7 +71,12 @@ If this is not done, the filename will default to the current name.
   In either case, if a file with the requested name already exists in the destination directory,
   a unique name will be generated in the same way as common OS filesystems handle filename conflicts 
   (eg. if `sample.txt` is requested, but `sample.txt` and `sample(1).txt` already exist, the file will be named `sample(2).txt`).
-
+  
+- Significant effort was made to make the program reasonably robust (given the scope) and to protect against bad inputs,
+even in cases where such inputs are not possible with the client as implemented. For example, the server correctly 
+  handles requests of types other than `DIR`, `UPLOAD`, `DOWNLOAD`, and `DELETE` with an appropriate error message,
+  even though the provided client is incapable of sending any other types of requests. After all, never trust the users.
+  
 ### Specific Exclusions
 
 - The server does not need a user interface
@@ -97,13 +107,14 @@ The `hostname` is the IP address of the server (default `localhost`). If the cli
 
 The `port` is the port the client will seek to connect to (default `9001`).
 
-Note that in a Bash terminal, you can append "&" to the end of a command to run the process in the background, allowing you to run one or more clients in the same terminal window you used to start the server. For example: 
+*Gradle version 5.6.4 or newer is required.*
+
+Note that in a Bash terminal, you can append `&` to the end of a command to run the process in the background, allowing you to run one or more clients in the same terminal window you used to start the server. For example: 
 ```
 gradle startServer &
 gradle run --args="myPC1 src/main/resources/local/" &
 gradle run --args="myPC2 src/main/resources/local/"
 ```
-Gradle version 5.6.4 or newer is required.
 
 ## Known Issues
 
