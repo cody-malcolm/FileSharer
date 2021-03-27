@@ -70,9 +70,24 @@ public class FileSharerClient extends Application {
         boolean connected = establishConnection();
         if (connected) {
             sendRequest("UPLOAD", filename, targetName);
+            processUploadResponse(filename);
             processDirectoryResponse();
         } else {
             controller.giveFeedback("A connection was not established.", false);
+        }
+    }
+
+    private void processUploadResponse(String filename) {
+        try {
+            if (in.readLine().equals("202")) {
+                controller.giveFeedback("'" + filename + "' was uploaded successfully.", true);
+                in.readLine(); // discard next line
+            } else {
+                controller.giveFeedback(in.readLine(), false);
+            }
+        } catch(IOException e) {
+            controller.giveFeedback("There was an error parsing the response from the server", false);
+            e.printStackTrace();
         }
     }
 
@@ -80,7 +95,9 @@ public class FileSharerClient extends Application {
         boolean connected = establishConnection();
         if (connected) {
             sendRequest("DOWNLOAD", filename, "");
-            processDownload(("".equals(targetName) ? filename : targetName), localDirectory);
+            processDownloadResponse(("".equals(targetName) ? filename : targetName), localDirectory);
+
+            processDirectoryResponse(filename);
         } else {
             controller.giveFeedback("A connection was not established.", false);
         }
@@ -90,7 +107,9 @@ public class FileSharerClient extends Application {
         boolean connected = establishConnection();
         if (connected) {
             sendRequest("DOWNLOAD", filename, "");
-            return processPreview(filename);
+            String response = processPreviewResponse();
+            processDirectoryResponse(filename);
+            return response;
         } else {
             return "";
         }
@@ -110,14 +129,29 @@ public class FileSharerClient extends Application {
         boolean connected = establishConnection();
         if (connected) {
             sendRequest("DELETE", filename, "");
+            processDeleteResponse(filename);
             processDirectoryResponse();
-            controller.highlightServerFile("");
         } else {
             controller.giveFeedback("A connection was not established.", false);
         }
     }
 
-    private String processPreview(String filename) {
+    private void processDeleteResponse(String filename) {
+        try {
+            if (in.readLine().equals("204")) {
+                controller.giveFeedback("'" + filename + "' was deleted successfully.", true);
+                in.readLine(); // discard next line
+            } else {
+                controller.giveFeedback(in.readLine(), false);
+            }
+        } catch(IOException e) {
+            controller.giveFeedback("There was an error parsing the response from the server", false);
+            e.printStackTrace();
+        }
+    }
+
+    // s/b good
+    private String processPreviewResponse() {
         String response = "";
         String line;
 
@@ -128,25 +162,20 @@ public class FileSharerClient extends Application {
                 while((i++ < numLines) && in.ready() && (null != (line = in.readLine()))) {
                     response += line + "\r\n";
                 }
-                processDirectoryResponse();
-                controller.highlightServerFile(filename);
                 return response;
-            } else if ("404".equals(line)) {
-                line = in.readLine(); // discard "1"
-                controller.giveFeedback(in.readLine() , false);
-                processDirectoryResponse();
-                controller.highlightServerFile("");
-                return response;
-            } else {
+            } else if ("403".equals(line)) {
+                controller.giveFeedback(in.readLine(), false);
                 return response;
             }
         } catch(IOException e) {
             e.printStackTrace();
-            return "";
+            return response;
         }
+        return response;
     }
 
-    private void processDownload(String filename, String localDirectory) {
+    // s/b good
+    private void processDownloadResponse(String filename, String localDirectory) {
         String line;
         try {
             if ((line = in.readLine()).equals("203")) {
@@ -159,29 +188,38 @@ public class FileSharerClient extends Application {
                 }
                 writer.flush();
                 writer.close();
-                processDirectoryResponse();
 
                 controller.highlightServerFile(new File(filename).getName());
-            } else if ("404".equals(line)) {
-                line = in.readLine(); // discard "1"
+                controller.giveFeedback("'" + filename + "' was successfully downloaded.", true);
+            } else if ("403".equals(line)) {
                 controller.giveFeedback(in.readLine() , false);
-                processDirectoryResponse();
                 controller.highlightServerFile("");
+                controller.giveFeedback("There was an error trying to download " + filename, false);
             }
         } catch(IOException e) {
             e.printStackTrace();
         }
     }
 
+    // dir responses s/b good
     private void processDirectoryResponse() {
-        String line;
+        processDirectoryResponse("");
+    }
+
+    private void processDirectoryResponse(String selectedFilename) {
         try {
-            if ("201".equals(line = in.readLine())) {
+            if ("201".equals(in.readLine())) {
+
+                String line;
+                in.readLine(); // discard number of files, not used in current implementation (maybe later?)
                 controller.clearServerTree();
-                String sharedDirectoryName = (line = in.readLine());
+                String sharedDirectoryName = (in.readLine());
                 controller.updateServerDirectory(sharedDirectoryName);
                 while (!"".equals(line = in.readLine())) {
                     controller.addServerFileListing(line);
+                }
+                if (!"".equals(selectedFilename)) {
+                    controller.highlightServerFile(selectedFilename);
                 }
             }
         } catch(IOException e) {
@@ -189,20 +227,24 @@ public class FileSharerClient extends Application {
         }
     }
 
-
+    // ONLY USED FOR DIR
     private void sendRequest(String type) {
         out.println(alias);
         out.println(type);
         out.flush();
     }
 
+    // Used for UPLOAD, DOWNLOAD, DELETE
     private void sendRequest(String type, String filename, String targetName) {
-        // TODO add a code to indicate successful file read
         out.println(alias);
         out.println(type);
 
         File file = new File(filename);
-        out.println(("".equals(targetName) ? file.getName() : targetName));
+        if ("".equals(targetName)) {
+            out.println(file.getName());
+        } else {
+            out.println(targetName);
+        }
 
         if (type == "UPLOAD") {
             // read and copy file

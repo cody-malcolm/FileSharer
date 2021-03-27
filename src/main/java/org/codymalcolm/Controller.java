@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
-// TODO Implement the rest of the optional arguments
 // TODO Implement measures to protect against race condition
 // TODO Upload should stay highlighted
 // TODO Download should stay highlighted, download needs to give feedback on client
@@ -118,7 +117,7 @@ public class Controller {
                 giveFeedback("To upload, you must select a local file.", false);
             }
         }
-        refreshLocal();
+        refreshLocal(selectedFilename);
     }
 
     protected void giveFeedback(String s, boolean key) {
@@ -284,4 +283,5 @@ public class Controller {
             }
         });
     }
+
 }
