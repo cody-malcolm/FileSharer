@@ -77,10 +77,11 @@ public class Controller {
     private void refreshLocal(String filename) {
         refreshLocal();
         if (null != filename) {
+            String selected = new File(filename).getName();
             localDirectoryName.getChildren().forEach(new Consumer<TreeItem<String>>() {
                 @Override
                 public void accept(TreeItem<String> stringTreeItem) {
-                    if(stringTreeItem.getValue().equals(filename)) {
+                    if(stringTreeItem.getValue().equals(selected)) {
                         localSelectionModel.select(localTreeView.getRow(stringTreeItem));
                     };
                 }
@@ -89,9 +90,8 @@ public class Controller {
     }
 
     private void refreshLocal() {
-
         localSelectionModel.clearSelection();
-        serverSelectionModel.clearSelection();
+
         localDirectoryName.getChildren().clear();
         String directory = localDirectory.getText();
         localDirectoryName.setValue(directory);
@@ -150,6 +150,7 @@ public class Controller {
             }
         }
         refreshLocal();
+        serverSelectionModel.clearSelection();
     }
 
     public void setClient(FileSharerClient client) {
@@ -264,6 +265,7 @@ public class Controller {
     public void highlightServerFile(String filename) {
         localSelectionModel.clearSelection();
         serverSelectionModel.clearSelection();
+        System.out.println(filename);
 
         /* This is backup code in case a certain bug crops up again */
 //        ObservableList<TreeItem<String>> serverItems = serverDirectoryName.getChildren();
@@ -277,6 +279,7 @@ public class Controller {
         serverDirectoryName.getChildren().forEach(new Consumer<TreeItem<String>>() {
             @Override
             public void accept(TreeItem<String> stringTreeItem) {
+                System.out.println(stringTreeItem.getValue() + " " + filename + " " + stringTreeItem.getValue().equals(filename));
                 if(stringTreeItem.getValue().equals(filename)) {
                     serverSelectionModel.select(serverTreeView.getRow(stringTreeItem));
                 };

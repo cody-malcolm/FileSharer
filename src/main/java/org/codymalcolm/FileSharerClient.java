@@ -96,7 +96,6 @@ public class FileSharerClient extends Application {
         if (connected) {
             sendRequest("DOWNLOAD", filename, "");
             processDownloadResponse(("".equals(targetName) ? filename : targetName), localDirectory);
-
             processDirectoryResponse(filename);
         } else {
             controller.giveFeedback("A connection was not established.", false);
@@ -188,12 +187,9 @@ public class FileSharerClient extends Application {
                 }
                 writer.flush();
                 writer.close();
-
-                controller.highlightServerFile(new File(filename).getName());
                 controller.giveFeedback("'" + filename + "' was successfully downloaded.", true);
             } else if ("403".equals(line)) {
                 controller.giveFeedback(in.readLine() , false);
-                controller.highlightServerFile("");
                 controller.giveFeedback("There was an error trying to download " + filename, false);
             }
         } catch(IOException e) {
@@ -209,7 +205,6 @@ public class FileSharerClient extends Application {
     private void processDirectoryResponse(String selectedFilename) {
         try {
             if ("201".equals(in.readLine())) {
-
                 String line;
                 in.readLine(); // discard number of files, not used in current implementation (maybe later?)
                 controller.clearServerTree();
@@ -219,6 +214,8 @@ public class FileSharerClient extends Application {
                     controller.addServerFileListing(line);
                 }
                 if (!"".equals(selectedFilename)) {
+//                    String selected = new File(selectedFilename).getName();
+                    System.out.println("This is being run");
                     controller.highlightServerFile(selectedFilename);
                 }
             }
