@@ -1,3 +1,7 @@
+// Cody Malcolm 100753739
+// March 27th, 2021
+// CSCI 2020u - Assignment #2 - File Sharing System
+
 package org.codymalcolm;
 
 import java.io.*;
@@ -5,23 +9,30 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.Date;
 
+/**
+ * A ClientConnectionHandler handles a connection to client. Each ClientConnectionHandler processes a single request,
+ * sends an appropriate response, then terminates the connection.
+ */
 public class ClientConnectionHandler implements Runnable {
-
-    private Socket socket = null;
-    private File directory = null;
-    private BufferedReader requestInput = null;
-    private PrintWriter responseOutput = null;
-    private String clientIP = null;
-    private String alias = null;
+    /** The Socket this connection uses */
+    private Socket socket;
+    /** The directory the shared directory the server is using */
+    private File directory;
+    /** The Reader for the client input */
+    private BufferedReader requestInput;
+    /** The Writer for the server output */
+    private PrintWriter responseOutput;
+    /** The client's IP address */
+    private String clientIP;
+    /** The client's self-identified alias (appended with their IP) */
+    private String alias;
 
     /**
-     * Constructor for ClientConnectionHandler
-     *
-     * Each ClientConnectionHandler should only remain connected very briefly. This sets up some useful instance
-     * variables that are used in multiple methods, and establishes the input and output streams for the connection.
+     * Constructor for ClientConnectionHandler. Stores the given paramters, establishes the input and output streams
+     * for the connection, stores the client's IP, and reads in the first line of the request (which is the alias)
      *
      * @param socket The clientSocket that has been accepted by the server
-     * @param directory The shared directory the server is using for this runtime.
+     * @param directory The shared directory the server is using
      * @throws IOException when there is a failure to get the InputStream or OutputStream for the socket
      */
     public ClientConnectionHandler(Socket socket, File directory) throws IOException {
@@ -29,7 +40,7 @@ public class ClientConnectionHandler implements Runnable {
         this.socket = socket;
         this.directory = directory;
 
-        // store the client's IP address for logging
+        // store the client's IP address for logging purposes
         this.clientIP = socket.getInetAddress().toString();
 
         // intialize the BufferedReader and PrintWriter that will be used to communicate with client
@@ -81,7 +92,8 @@ public class ClientConnectionHandler implements Runnable {
     }
 
     /**
-     * This method is automatically invoked when the server Thread associated with "this" is started.
+     * This method is automatically invoked when the server Thread associated with "this" is started. It calls a handler
+     * for the request, then closes the input and output Streams and the Socket.
      */
     public void run() {
         // call the helper to sort the request
@@ -99,11 +111,12 @@ public class ClientConnectionHandler implements Runnable {
     }
 
     /**
-     * This method is responsible for sorting the request type and calling the appropriate handler(s). The handler(s)
-     * processes the request and returns the response. This method concatenates the responses and sends the complete
-     * response to the client.
+     * Responsible for sorting the request type and calling the appropriate handler(s). The handler or handlers
+     * process the request and return the response. Concatenates the response and sends the complete response to the
+     * client.
      */
     private void handleRequest() {
+        // initialize the response
         String response = "";
         try {
             // read in the type of request - accepted are "DIR", "UPLOAD", "DOWNLOAD", and "DELETE"
@@ -127,17 +140,23 @@ public class ClientConnectionHandler implements Runnable {
         } catch(IOException e) {
             e.printStackTrace();
         }
+        // append the response with a directory listing
         response += handleDir();
+
+        // send the response to the client
         responseOutput.println(response);
         responseOutput.flush();
     }
 
     /**
      * This method returns a String of the following format:
+     *
      * 201
      * <number of files listed, including the shared directory>
      * <the name of the shared directory>
      * <zero or more lines, each listing one filename in the shared directory>
+     *
+     * Note: All needed information from the client has already been parsed by the time this method is invoked
      *
      * @return A String as described above
      */
@@ -161,20 +180,29 @@ public class ClientConnectionHandler implements Runnable {
         for (String filename : filenames) {
             response += filename + "\r\n";
         }
+
+        // log an appropriate message
         log("A listing of files in the shared directory was sent to " + alias);
+
+        // return the response
         return response;
     }
 
     /**
-     * TODO Finish this documentation
-     * This method returns a String of the following format for successful requests:
+     * Reads in the client input and copies it to a new file on the server, using the client-provided target name and
+     * updating the name if there is a filename conflict. Returns a String of the following format for successful
+     * requests:
+     *
      * 202
      * 0
+     *
      * For unsuccessful requests, this method returns a String of the following format:
+     *
      * 402
      * There was an error uploading <filename>
      *
      * Note: An upload request is of the following format:
+     *
      * <alias> (already parsed)
      * UPLOAD (already parsed)
      * <target filename>
@@ -201,6 +229,7 @@ public class ClientConnectionHandler implements Runnable {
             // use default filename
             targetName = "newfile.txt";
         }
+
         // append the target filename to the path
         filename += targetName;
         // call the Utility to verify filename doesn't already exist, update if needed
@@ -222,6 +251,8 @@ public class ClientConnectionHandler implements Runnable {
 
                 // copy successful
                 response += "202\r\n0\r\n";
+
+                // log the result of the request
                 log(alias + " uploaded " + filename.substring(7) + ".");
             } catch(IOException e) {
                 // copy unsuccessful
@@ -237,14 +268,38 @@ public class ClientConnectionHandler implements Runnable {
         } catch(IOException e) {
             // copy unsuccessful
             response += "402\r\nThere was an error uploading '" + targetName + "' to the server.\r\n";
+
+            // log the result of the request
             log("An error occurred when creating file named " + filename + ".");
 
             e.printStackTrace();
         }
+
         // return the response
         return response;
     }
 
+    /**
+     * Copies the requested file to the client line-by-line. Returns a String of the following format for successful
+     * requests:
+     *
+     * 203
+     * <number of lines in the file>
+     * <zero or more lines, each listing one line from the file>
+     *
+     * For unsuccessful requests, this method returns a String of the following format:
+     *
+     * 403
+     * <A message describing the error>
+     *
+     * Note: A download request is of the following format:
+     *
+     * <alias> (already parsed)
+     * DOWNLOAD (already parsed)
+     * <target filename>
+     *
+     * @return a String as described above
+     */
     private String handleDownload() {
         // initialize the response
         String response = "";
@@ -252,10 +307,13 @@ public class ClientConnectionHandler implements Runnable {
         // initialize the variable to accept the filename from the request
         String filename;
         try {
+            // read the filename from the client request
             filename = requestInput.readLine();
         } catch(IOException e) {
             // if we can't read the filename, we can't do the download
             response += "403\r\nThere was an error parsing the download request.\r\n";
+
+            // log an appropriate message recording the error
             log("There was an error parsing the download request from " + alias + ".");
 
             e.printStackTrace();
@@ -267,7 +325,10 @@ public class ClientConnectionHandler implements Runnable {
         File file = new File(path);
 
         if (!file.exists()) {
+            // the file doesn't exist, so there is nothing to download
             response += "403\r\n'" + filename + "' was not found in the shared directory.\r\n";
+
+            // log an appropriate message recording the error
             log("The requested file was not found in the shared directory.");
         } else {
             // read and copy file
@@ -304,6 +365,25 @@ public class ClientConnectionHandler implements Runnable {
         return response;
     }
 
+    /**
+     * Deletes the file indicated by the client. Returns a String of the following format for successful requests:
+     *
+     * 204
+     * 0
+     *
+     * For unsuccessful requests, this method returns a String of the following format:
+     *
+     * 404
+     * <A message describing the error>
+     *
+     * Note: A delete request is of the following format:
+     *
+     * <alias> (already parsed)
+     * DOWNLOAD (already parsed)
+     * <target filename>
+     *
+     * @return a String as described above
+     */
     private String handleDelete() {
         // initialize the response
         String response = "";
@@ -311,13 +391,18 @@ public class ClientConnectionHandler implements Runnable {
         // initialize the variable to accept the filename from the request
         String filename;
         try {
+            // read the filename from the client request
             filename = requestInput.readLine();
         } catch(IOException e) {
             // if we can't read the filename, we can't do the deletion
             response += "404\r\nThere was an error parsing the delete request.\r\n";
+
+            // log an appropriate error message
             log("There was an error parsing the delete request from " + alias + ".");
 
             e.printStackTrace();
+
+            // return the response
             return response;
         }
 
@@ -325,17 +410,35 @@ public class ClientConnectionHandler implements Runnable {
         String path = "shared/" + directory.getName() + "/" + filename;
         File file = new File(path);
 
+        // if the file exists
         if (file.exists()) {
+            // delete it
             file.delete();
+
+            // log the successful deletion
             log(directory.getName() + "/" + filename + " was deleted.");
+
+            // record the response
             response += ("204\r\n0\r\n");
         } else {
+            // the file doesn't exist, log the appropriate messages
             log("The requested file was not found in the shared directory.");
             response += ("404\r\nThat file was already deleted from the server.\r\n");
         }
+
+        // return the response
         return response;
     }
 
+    /**
+     * This method returns a String of the following format:
+     *
+     * 405
+     * <request> is not a valid request type.
+     *
+     * @param request the unknown request from the client
+     * @return
+     */
     private String handleUnknown(String request) {
         return "405\r\n'" + request + "' is not a valid request type.\r\n";
     }

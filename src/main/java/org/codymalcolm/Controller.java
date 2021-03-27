@@ -1,3 +1,7 @@
+// Cody Malcolm 100753739
+// March 27th, 2021
+// CSCI 2020u - Assignment #2 - File Sharing System
+
 package org.codymalcolm;
 
 import javafx.collections.ObservableList;

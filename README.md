@@ -45,6 +45,9 @@ The base requirements of the project are as follows:
 
 - Allow the clients to change the local directory during runtime.
 
+- Allow the server to change the shared directory during runtime. Whether a custom directory is provided or not, if 
+  the directory does not exist, it will be created.
+
 - A pane was added to display the contents of a selected file.
 
 - Clients can request the deletion of files stored in the shared directory.
@@ -61,9 +64,8 @@ The base requirements of the project are as follows:
     
 - If the log file is not found, a new one will be created. Additionally, the log records the time the event occurs.
 
-- The server can optionally take arguments for the directory name (default `shared`) and port (default `9001`) as arguments.
-  Whether a custom directory is provided or not, if the directory does not exist, it will be created during startup.
-  
+- The server can optionally take an argument for the port to listen to (default `9001`) as a command-line argument.
+
 - The client can optionally take arguments for both the hostname (default `localhost`) and port (default `9001`).
   
 - When uploading or downloading a file, the client can optionally provide a new name for the file.
@@ -81,23 +83,20 @@ even in cases where such inputs are not possible with the client as implemented.
 
 - The server does not need a user interface
 
-- No mechanism for navigating to sub-directories is required, and it can be presumed that only text files can be in the shared directory
+- No mechanism for navigating to sub-directories is required, and it can be presumed that only text files can be in 
+  the shared directory
 
 ## How to Run
 
-After cloning or unzipping the project, navigate to the root directory in a terminal and start the server with one of the following commands: 
-- `gradle startServer`
-- `gradle startServer --args="<directory-name>"`
-- `gradle startServer --args="<directory-name> <port>"`
+After cloning or unzipping the project, navigate to the root directory in a terminal. Then:
 
-The `directory-name` is the local directory the server will use this session (default `shared`). 
+The server can be started with the following command: `gradle start [--args="<port>"]`
 
 The `port` is the port the server will listen to this session (default `9001`).
 
-With the server running, navigate to the root directory in a terminal and start one or more clients with one of the following commands:
-- `gradle run --args="<alias> <directory-path>"`
-- `gradle run --args="<alias> <directory-path> <hostname>"`
-- `gradle run --args="<alias> <directory-path> <hostname> <port>"`
+The client(s) can be started with the following command: 
+
+`gradle run --args="<alias> <directory-path> [<hostname> [<port>]]"`
 
 The `alias` is an identifier for the client.
 
@@ -111,7 +110,7 @@ The `port` is the port the client will seek to connect to (default `9001`).
 
 Note that in a Bash terminal, you can append `&` to the end of a command to run the process in the background, allowing you to run one or more clients in the same terminal window you used to start the server. For example: 
 ```
-gradle startServer &
+gradle start &
 gradle run --args="myPC1 src/main/resources/local/" &
 gradle run --args="myPC2 src/main/resources/local/"
 ```

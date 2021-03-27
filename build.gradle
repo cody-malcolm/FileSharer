@@ -25,7 +25,7 @@ test {
     useJUnitPlatform()
 }
 
-task startServer(type: JavaExec) {
+task start(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'org.codymalcolm.FileSharerServer'
     standardInput = System.in
