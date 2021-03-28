@@ -83,12 +83,23 @@ public class Controller {
     }
 
     /**
-     * A setter for the initial local directory filename.
+     * A setter for the initial local directory filename. Handles case where user entered an invalid path.
      *
      * @param d the filename
      */
     public void setInitialLocalDirectory(String d) {
-        initialLocalDirectory = d;
+        // check for existence
+        if (new File(d).exists()) {
+            initialLocalDirectory = d;
+        } else {
+            // handle case where directory doesn't exist - makes use of fact src/main/resources is known to exist
+            initialLocalDirectory = "src/main/resources/local";
+            System.out.println("The provided directory doesn't exist. Using " + initialLocalDirectory + " instead.");
+            File dir = new File(initialLocalDirectory);
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+        }
     }
 
     /**

@@ -90,13 +90,13 @@ even in cases where such inputs are not possible with the client as implemented.
 
 After cloning or unzipping the project, navigate to the root directory in a terminal. Then:
 
-The server can be started with the following command: `gradle start [--args="<port>"]`
+The server can be started with the following command: `gradle -q start [--args="<port>"]`
 
 The `port` is the port the server will listen to this session (default `9001`).
 
 The client(s) can be started with the following command: 
 
-`gradle run --args="<alias> <directory-path> [<hostname> [<port>]]"`
+`gradle -q run --args="<alias> <directory-path> [<hostname> [<port>]]"`
 
 The `alias` is an identifier for the client.
 
@@ -110,9 +110,9 @@ The `port` is the port the client will seek to connect to (default `9001`).
 
 Note that in a Bash terminal, you can append `&` to the end of a command to run the process in the background, allowing you to run one or more clients in the same terminal window you used to start the server. For example: 
 ```
-gradle start &
-gradle run --args="myPC1 src/main/resources/local/" &
-gradle run --args="myPC2 src/main/resources/local/"
+gradle -q start &
+gradle -q run --args="myPC1 src/main/resources/local/" &
+gradle -q run --args="myPC2 src/main/resources/local/"
 ```
 
 ## Known Issues

@@ -160,6 +160,14 @@ public class FileSharerServer {
             // if the directory doesn't exist, create it and print an appropriate message
             if (!directory.exists()) {
                 System.out.println("Shared folder not found. Creating new shared folder...");
+
+                // ensure the root shared folder exists, and create it if not
+                File temp = new File("shared");
+                if (!temp.exists()) {
+                    temp.mkdir();
+                }
+
+                // create the directory inside the root shared folder
                 directory.mkdir();
             }
 

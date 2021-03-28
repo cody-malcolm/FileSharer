@@ -49,7 +49,7 @@ public class ListenerThread extends Thread {
             serverSocket = new ServerSocket(port);
 
             // print a message indicating that the server is listening for requests
-            System.out.print("The server is listening to port: " + port);
+            System.out.println("The server is listening to port: " + port);
 
             while (!stopped) {
                 try {
