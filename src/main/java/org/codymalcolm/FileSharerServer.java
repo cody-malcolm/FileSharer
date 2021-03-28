@@ -19,28 +19,23 @@ public class FileSharerServer {
     /** The shared directory the server uses for servicing client requests */
     private static File directory;
     /** The port the server will listen to */
-    private static int port = 9001;
+    private static int port;
     /** A flag to track whether the server is listening for requests or not */
     private static boolean listening = false;
     /** A Thread to handle the listening for client requests (so the server listen for admin input) */
     private static ListenerThread listenerThread;
 
     /**
-     * Main method. Initializes the port (if provided), prints instructions for admin, and then processes admin input.
+     * Main method. Sets the port (if provided and valid), prints instructions for admin, and then processes admin input.
      *
      * @param args If any, first should be an integer to be saved as the port to listen to
      */
     public static void main(String[] args) {
-        // optional argument for port
+        // set port
         if (args.length > 0) {
-            try {
-                // set port to argument, if it can be parsed as an int
-                port = Integer.parseInt(args[1]);
-            } catch(NumberFormatException e) {
-                // otherwise stick with default
-                System.out.println("Please note, correct usage is 'gradle startServer --args=\"<port>\"'.");
-                System.out.println("The port was not understood, using default.");
-            }
+            port = Utils.parsePort(args[0]);
+        } else {
+            port = 9001;
         }
 
         printCommands();

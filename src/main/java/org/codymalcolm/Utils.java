@@ -8,7 +8,6 @@ import java.io.File;
 
 /**
  * Fully static class to provide utility functions to multiple other classes in the Application.
- * (turns out only one was needed for this Application)
  */
 class Utils {
     /**
@@ -99,5 +98,29 @@ class Utils {
 
         // return the new filename
         return filename;
+    }
+
+    /**
+     * Takes a String input (argument to the client or server) and parses it, returning it if valid or a hardcoded
+     * default if invalid.
+     *
+     * @param s the String to parse
+     * @return a port number
+     */
+    public static int parsePort(String s) {
+        try {
+            // set port to argument, if it can be parsed as an int and is in the valid range
+            int port = Integer.parseInt(s);
+            if (port < 65536 && port >= 0) {
+                return port;
+            } else {
+                // otherwise print an appropriate error message and stick with default
+                System.out.println("Please note, a valid port must be between 0 and 65535, inclusive. Using default.");
+            }
+        } catch(NumberFormatException e) {
+            System.out.println("Please note, correct usage is 'gradle startServer --args=\"<port>\"'.");
+            System.out.println("The port was not understood, using default.");
+        }
+        return 9001;
     }
 }

@@ -66,12 +66,7 @@ public class FileSharerClient extends Application {
 
         // if a fourth argument is provided, update the port with the 4 argument if it can be parsed as an integer
         if (numParams > 3) {
-            try {
-                port = Integer.parseInt(parameters.get(3));
-            } catch(NumberFormatException e) {
-                System.out.println("Note: Please not, correct usage is gradle run --args=\"<alias> <local-directory> <hostname> <port>\"");
-                System.out.println("The port was not understood, using default.");
-            }
+            port = Utils.parsePort(parameters.get(3));
         }
 
         // get the loader
