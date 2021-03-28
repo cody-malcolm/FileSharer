@@ -9,6 +9,19 @@ Cody Malcolm 100753739
 This application consists of a Server and Client to facilitate the sharing of text-based files. The Server is 
 implemented in Java and the client is implemented in JavaFX.
 
+## Runtime Examples
+
+1. Download demonstration
+![Client Demonstration 1](./demos/ClientDemo2.png)
+
+2. Upload demonstration
+![Client Demonstration 2](./demos/ClientDemo4.png)
+
+3. Server admin demonstration
+![Server Demonstration](./demos/ServerDemo1.png)
+
+More demonstrations, including of client error messages and a server log file, can be found in the demos folder.
+
 ## Requirements
 
 ### Main
@@ -86,7 +99,9 @@ even in cases where such inputs are not possible with the client as implemented.
 - No mechanism for navigating to sub-directories is required, and it can be presumed that only text files can be in 
   the shared directory
 
-## How to Run
+## Usage
+
+### How to Run
 
 After cloning or unzipping the project, navigate to the root directory in a terminal. Then:
 
@@ -115,7 +130,21 @@ gradle -q run --args="myPC1 src/main/resources/local/" &
 gradle -q run --args="myPC2 src/main/resources/local/"
 ```
 
+### How to Use
+
+The server takes 6 instructions which are described during startup, when an unsupported instruction is received, and 
+when the `help` instruction is received. The important details are that the server must be told to listen for 
+connections with the `start [name]` instruction, and the admin can change the shared directory without stopping the 
+Application by issuing a `stop` instruction followed by a new `start [name]` instruction.
+
+The client has a clickable user interface. The directory can be changed during runtime by clicking on the input to the
+right of the buttons. If an upload or download is requested and there is text in the custom filename field, the
+Application will rename the file at the destination according to the contents of the custom filename field. It is
+crucial that the user not click on any binary file types (such as images), or the Application will crash and freeze.
+
 ## Known Issues
 
 The program will crash and freeze if a binary file (such as an image file) is clicked on.
 This program should only be used with text-based files.
+
+When displaying file previews, the client will display empty files as though no file is selected.
