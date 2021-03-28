@@ -117,8 +117,12 @@ public class Controller {
      * mentioned setters.
      */
     public void setup() {
+        // if the initial local directory is missing the trailing '/', add it
+        if (!"/".equals(initialLocalDirectory.substring(initialLocalDirectory.length()-1))) {
+            initialLocalDirectory += "/";
+        }
         // set the text of the Label used to select the directory to the default
-        localDirectory.setText(initialLocalDirectory + "/");
+        localDirectory.setText(initialLocalDirectory);
 
         /* the preview container is initialized in main.fxml with both the previewPane and the
         previewInstructionsContainer, but we only want the previewInstructionsContainer for now, so remove the other */

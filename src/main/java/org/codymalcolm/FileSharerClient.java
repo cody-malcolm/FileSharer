@@ -216,7 +216,7 @@ public class FileSharerClient extends Application {
     }
 
     /**
-     * Parses the server response to an upload request, and provides appropriate feedback to the user.
+     * Parses the server response to an upload request, and provides appropriate feedback to the user in case of error.
      *
      * @param filename the name of the file that was uploaded
      */
@@ -224,9 +224,6 @@ public class FileSharerClient extends Application {
         try {
             // if success code
             if (in.readLine().equals("202")) {
-                // send success feedback to the controller
-                controller.giveFeedback("'" + new File(filename).getName() + "' was uploaded successfully.", true);
-
                 in.readLine(); // discard next line (is 0, indicating no more lines of this portion of the response)
             } else {
                 // send error feedback to the controller
@@ -235,7 +232,6 @@ public class FileSharerClient extends Application {
         } catch(IOException e) {
             // send error feedback to the controller
             controller.giveFeedback("There was an error parsing the response from the server", false);
-            e.printStackTrace();
         }
     }
 
@@ -259,7 +255,6 @@ public class FileSharerClient extends Application {
         } catch(IOException e) {
             // send error feedback to the controller
             controller.giveFeedback("There was an error parsing the response from the server", false);
-            e.printStackTrace();
         }
     }
 
@@ -438,9 +433,9 @@ public class FileSharerClient extends Application {
 
         // if upload,
         if (type.equals("UPLOAD")) {
-            // read and copy file
+                // read and copy file
             try {
-                // initialze the BufferedReader
+                // initialize the BufferedReader
                 BufferedReader input = new BufferedReader(new FileReader(file));
 
                 // initialize the variable to hold a single line
@@ -456,8 +451,8 @@ public class FileSharerClient extends Application {
             } catch(IOException e) {
                 // send a notification to the controller that something went wrong
                 controller.giveFeedback("Something went wrong reading the file.", false);
-                e.printStackTrace();
             }
+
         }
 
         // release the output to the server
@@ -481,6 +476,7 @@ public class FileSharerClient extends Application {
 
             // send the feedback to the controller
             controller.giveFeedback("", true);
+            System.out.println("boom");
 
             return true;
 

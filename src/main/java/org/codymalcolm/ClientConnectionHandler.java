@@ -259,8 +259,6 @@ public class ClientConnectionHandler implements Runnable {
                 // copy unsuccessful
                 response += "402\r\nThere was an error uploading '" + targetName + "' to the server.\r\n";
                 log("There was an error uploading " + targetName  + " from " + alias + ".");
-
-                e.printStackTrace();
             } finally {
                 // close the output file
                 output.flush();
@@ -272,8 +270,6 @@ public class ClientConnectionHandler implements Runnable {
 
             // log the result of the request
             log("An error occurred when creating file named " + filename + ".");
-
-            e.printStackTrace();
         }
 
         // return the response
@@ -317,7 +313,6 @@ public class ClientConnectionHandler implements Runnable {
             // log an appropriate message recording the error
             log("There was an error parsing the download request from " + alias + ".");
 
-            e.printStackTrace();
             return response.toString();
         }
 
@@ -359,7 +354,6 @@ public class ClientConnectionHandler implements Runnable {
             } catch(IOException e) {
                 // there was some error, prepend the metadata (response code, error message) to the response
                 response.insert(0, "403\r\nThere was an error copying the file contents\r\n");
-                e.printStackTrace();
             }
         }
         // return the response
@@ -400,8 +394,6 @@ public class ClientConnectionHandler implements Runnable {
 
             // log an appropriate error message
             log("There was an error parsing the delete request from " + alias + ".");
-
-            e.printStackTrace();
 
             // return the response
             return response;
