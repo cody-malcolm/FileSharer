@@ -57,7 +57,7 @@ public class FileSharerServer {
         // initialize the Scanner
         Scanner scanner = new Scanner(System.in);
 
-        // intialize the exit flag
+        // initialize the exit flag
         boolean exit = false;
 
         while (!exit) {

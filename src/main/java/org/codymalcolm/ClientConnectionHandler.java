@@ -15,17 +15,17 @@ import java.util.Date;
  */
 public class ClientConnectionHandler implements Runnable {
     /** The Socket this connection uses */
-    private Socket socket;
+    final private Socket socket;
     /** The directory the shared directory the server is using */
-    private File directory;
+    final private File directory;
     /** The Reader for the client input */
-    private BufferedReader requestInput;
+    final private BufferedReader requestInput;
     /** The Writer for the server output */
-    private PrintWriter responseOutput;
+    final private PrintWriter responseOutput;
     /** The client's IP address */
-    private String clientIP;
+    final private String clientIP;
     /** The client's self-identified alias (appended with their IP) */
-    private String alias;
+    final private String alias;
 
     /**
      * Constructor for ClientConnectionHandler. Stores the given paramters, establishes the input and output streams
@@ -67,7 +67,7 @@ public class ClientConnectionHandler implements Runnable {
             File file = new File("shared/log.txt");
 
             // initialize the PrintWriter variable
-            PrintWriter output = null;
+            PrintWriter output;
             synchronized (this) {
                 // if there is already a log.txt file
                 if (file.exists()) {
@@ -79,7 +79,7 @@ public class ClientConnectionHandler implements Runnable {
                 }
 
                 // append the message to the file and close the PrintWriter
-                output.append(new Date() + ": " + message + "\r\n");
+                output.append(String.valueOf(new Date())).append(": ").append(message).append("\r\n");
                 output.close();
             }
 
@@ -128,6 +128,7 @@ public class ClientConnectionHandler implements Runnable {
             // check for each of the accepted requests, and call appropriate handler
             if (request.regionMatches(true, 0, "dir", 0, 3)) {
                 // do nothing (every request is always appended with a dir response at the end)
+                // included for semantic and modularity reasons
             } else if (request.regionMatches(true, 0, "upload", 0, 6)) {
                 response += handleUpload();
             } else if (request.regionMatches(true, 0, "download", 0, 8)) {
@@ -168,24 +169,24 @@ public class ClientConnectionHandler implements Runnable {
         Arrays.sort(filenames);
 
         // initialize the response
-        String response = "201\r\n";
+        StringBuilder response = new StringBuilder("201\r\n");
 
         // append the number of filenames in the response (including shared directory)
-        response += (filenames.length) + 1 + "\r\n";
+        response.append(filenames.length + 1).append("\r\n");
 
         // append the shared directory name (ignoring the root folder part of the path)
-        response += directory.getPath().substring(7) + "/\r\n";
+        response.append(directory.getPath().substring(7)).append("/\r\n");
 
         // for each filename, append it to the response
         for (String filename : filenames) {
-            response += filename + "\r\n";
+            response.append(filename).append("\r\n");
         }
 
         // log an appropriate message
         log("A listing of files in the shared directory was sent to " + alias);
 
         // return the response
-        return response;
+        return response.toString();
     }
 
     /**
@@ -218,7 +219,7 @@ public class ClientConnectionHandler implements Runnable {
         String filename = "shared/" + directory.getName() + "/";
 
         // initialize String to hold targetName, which may be needed for error reporting
-        String targetName = null;
+        String targetName;
 
         // read the target filename
         try {
@@ -302,7 +303,7 @@ public class ClientConnectionHandler implements Runnable {
      */
     private String handleDownload() {
         // initialize the response
-        String response = "";
+        StringBuilder response = new StringBuilder();
 
         // initialize the variable to accept the filename from the request
         String filename;
@@ -311,13 +312,13 @@ public class ClientConnectionHandler implements Runnable {
             filename = requestInput.readLine();
         } catch(IOException e) {
             // if we can't read the filename, we can't do the download
-            response += "403\r\nThere was an error parsing the download request.\r\n";
+            response.append("403\r\nThere was an error parsing the download request.\r\n");
 
             // log an appropriate message recording the error
             log("There was an error parsing the download request from " + alias + ".");
 
             e.printStackTrace();
-            return response;
+            return response.toString();
         }
 
         // initialize the File that we will copy to the response
@@ -326,7 +327,7 @@ public class ClientConnectionHandler implements Runnable {
 
         if (!file.exists()) {
             // the file doesn't exist, so there is nothing to download
-            response += "403\r\n'" + filename + "' was not found in the shared directory.\r\n";
+            response.append("403\r\n'").append(filename).append("' was not found in the shared directory.\r\n");
 
             // log an appropriate message recording the error
             log("The requested file was not found in the shared directory.");
@@ -344,25 +345,25 @@ public class ClientConnectionHandler implements Runnable {
 
                 // copy all lines of the file to the response and count each line
                 while (null != (line = input.readLine())) {
-                    response += line + "\r\n";
+                    response.append(line).append("\r\n");
                     numLines++;
                 }
                 // close the reader
                 input.close();
 
                 // prepend the metadata (response code, number of lines) to the response
-                response = "203\r\n" + numLines + "\r\n" + response;
+                response.insert(0, "203\r\n" + numLines + "\r\n");
 
                 // log the successful download
                 log(directory.getName() + "/" + filename + " was sent to " + alias);
             } catch(IOException e) {
                 // there was some error, prepend the metadata (response code, error message) to the response
-                response = "403\r\nThere was an error copying the file contents\r\n" + response;
+                response.insert(0, "403\r\nThere was an error copying the file contents\r\n");
                 e.printStackTrace();
             }
         }
         // return the response
-        return response;
+        return response.toString();
     }
 
     /**
@@ -437,7 +438,7 @@ public class ClientConnectionHandler implements Runnable {
      * <request> is not a valid request type.
      *
      * @param request the unknown request from the client
-     * @return
+     * @return a String as described above
      */
     private String handleUnknown(String request) {
         return "405\r\n'" + request + "' is not a valid request type.\r\n";

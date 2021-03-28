@@ -1,41 +1,54 @@
+/*  Cody Malcolm 100753739
+    March 27th, 2021
+    CSCI 2020u - Assignment #2 */
+
+/* style the pane headers */
 .header {
     -fx-font-size: 16px;
     -fx-label-padding: 10;
     -fx-font-weight: bold;
 }
 
+/* set default label color */
 .label {
     -fx-text-fill: hsb(240,65%,45%);
 }
 
+/* style the buttons */
 .button {
     -fx-min-width: 100;
     -fx-background-color: hsb(240, 8%, 80%);
     -fx-text-fill: hsb(240,65%,45%);
 }
 
+/* fade button on mouseover */
 .button:hover {
     -fx-background-color: hsb(240, 8%, 85%);
 }
 
+/* center the headers of the panes and set the background color */
 .vboxs {
     -fx-alignment: top-center;
     -fx-background-color: hsb(240,8%,75%);
 }
 
+/* center the preview insturctions in the container and set background color */
 .center {
     -fx-alignment: center;
     -fx-background-color: hsb(240,8%,90%);
 }
 
+/* green text for success feedback */
 .successMessage {
     -fx-text-fill: hsb(120, 50%, 50%);
 }
 
+/* red text for success feedback */
 .failureMessage {
     -fx-text-fill: hsb(0, 65%, 65%);
 }
 
+/* general styling for feedback label */
 #feedback {
     -fx-alignment: center;
     -fx-font-size: 14px;
@@ -52,24 +65,29 @@
     -fx-font-family: monospace;
 }
 
+/* fade directory label on hover to indicate click sensitivity */
 #directory:hover {
     -fx-background-color: hsb(240, 8%, 85%);
 }
 
+/* set font color and background color for tree entries */
 .tree-cell {
     -fx-background-color: hsb(240, 4%, 95%);
     -fx-text-fill: hsb(240,65%,45%);
 }
 
+/* styling for the selected entry */
 .tree-cell:selected {
     -fx-background-color: hsb(240, 65%, 45%);
     -fx-text-fill: hsb(240,0%,100%);
 }
 
+/* background color */
 .root {
     -fx-background-color: hsb(240, 8%, 95%);
 }
 
+/* styling for the textfield for custom filenames */
 #customFilename {
     -fx-label-padding: 5;
     -fx-border-width: 1;

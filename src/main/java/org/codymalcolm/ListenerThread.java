@@ -18,9 +18,9 @@ public class ListenerThread extends Thread {
     /** The Socket used to facilitate the connection */
     private ServerSocket serverSocket = null;
     /** The directory to use as the shared directory for this instance */
-    private File directory;
+    final private File directory;
     /** The port to listen to */
-    private int port;
+    final private int port;
     /** A flag to indicate if a stop has been requested */
     private boolean stopped;
 
