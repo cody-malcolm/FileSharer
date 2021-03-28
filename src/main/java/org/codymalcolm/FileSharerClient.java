@@ -447,7 +447,12 @@ public class FileSharerClient extends Application {
                 }
 
                 // send the confirmation to the controller
-                controller.giveFeedback("Uploaded '" + filename + "' successfully!", true);
+                // if the target name is blank, send the name of the file with path stripped out, else send target name
+                if ("".equals(targetName)) {
+                    controller.giveFeedback("Uploaded '" + file.getName() + "' successfully!", true);
+                } else {
+                    controller.giveFeedback("Uploaded '" + targetName + "' successfully!", true);
+                }
             } catch(IOException e) {
                 // send a notification to the controller that something went wrong
                 controller.giveFeedback("Something went wrong reading the file.", false);

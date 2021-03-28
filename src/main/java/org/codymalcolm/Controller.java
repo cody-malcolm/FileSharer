@@ -8,10 +8,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -291,51 +291,18 @@ public class Controller {
     }
 
     /**
-     * A helper method to parse the text from the Target of a TreeView mouse click into the filename we want.
-     *
-     * There are two forms the text may take, details inline.
-     *
-     * @param response the raw text from the mouseEvent.getTarget().toString()
-     * @return the filename from the reponse
-     */
-    private String parseTreeSelection(String response) {
-        // assume the response contains "text=" as it does with direct clicks, initialize the start index of the filename
-        int start = response.indexOf("text=") + 6; // will be 5 if "text=" was not found (since indexOf would be -1)
-
-        // initialize a variable to hold the end index
-        int end;
-
-        // if you click near the edge of the TreeItem, temp will be of the form "...]'<name>'", so "text=" is not found
-        if (start == 5) {
-            // then update the start index to the index indicated by the other format
-            start = response.indexOf("]'") + 2;
-
-            // get the end index based on this format
-            end = response.indexOf('\'', start);
-        } else {// if you click the TreeItem directly, temp will be of the form: "Text[text="<name>", ...]"
-            // get the end index based on this format
-            end = response.indexOf('"', start);
-        }
-
-        // return just the filename based on the start and end indexes found
-        return response.substring(start, end);
-    }
-
-    /**
      * Handles all the events related to the user clicking on the local file pane, including:
      * - deselecting any selected server files
      * - updating the localFile and serverFile flags
      * - displaying a file preview
      * - refreshing the local and server file TreeItems
-     *
-     * @param mouseEvent the click event
      */
-    public void handleLocalTreeClick(MouseEvent mouseEvent) {
+    public void handleLocalTreeClick() {
         // clear any selected server files
         serverSelectionModel.clearSelection();
 
         // get the path of the file that was clicked on
-        String path = localDirectory.getText() + parseTreeSelection(mouseEvent.getTarget().toString());
+        String path = localDirectory.getText() + localSelectionModel.selectedItemProperty().getValue().getValue();
 
         // create a File associated with the path
         File temp = new File(path);
@@ -406,15 +373,10 @@ public class Controller {
      * Note: This is structured quite differently than the local tree click, because there are many "side effects"
      * from processing the response of the directory request that comes with the File preview, so functions like
      * refreshing the local and server panes happen within those functions.
-     *
-     * @param mouseEvent the click event
      */
-    public void handleServerTreeClick(MouseEvent mouseEvent) {
-        // parse the file name that was clicked on
-        String filename = parseTreeSelection(mouseEvent.getTarget().toString());
-
+    public void handleServerTreeClick() {
         // update the filename field accordingly
-        selectedFilename = filename;
+        selectedFilename = serverSelectionModel.selectedItemProperty().getValue().getValue();
 
         // set the flags
         localFile = false;
@@ -428,7 +390,7 @@ public class Controller {
         }
 
         // request a preview of the selected file from the server
-        String filePreview = client.requestPreview(filename);
+        String filePreview = client.requestPreview(selectedFilename);
 
         // if received,
         if (!"".equals(filePreview)) {

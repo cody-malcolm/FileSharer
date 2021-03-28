@@ -43,7 +43,7 @@ public class ClientConnectionHandler implements Runnable {
         // store the client's IP address for logging purposes
         this.clientIP = socket.getInetAddress().toString();
 
-        // intialize the BufferedReader and PrintWriter that will be used to communicate with client
+        // initialize the BufferedReader and PrintWriter that will be used to communicate with client
         requestInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         responseOutput = new PrintWriter(socket.getOutputStream());
 
