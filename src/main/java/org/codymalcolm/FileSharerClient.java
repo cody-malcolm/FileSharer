@@ -290,7 +290,7 @@ public class FileSharerClient extends Application {
                     // add this line to the response
                     response.append(line).append("\r\n");
                 }
-                System.out.println("'" + new StringBuilder().toString() + "'");
+
                 // return the response to be previewed
                 return response.toString();
             } else if ("403".equals(line)) {

@@ -162,6 +162,11 @@ public class Controller {
         // store the path to the directory
         String path = localDirectory.getText();
 
+        // if the "/" is missing (such as during startup), append it
+        if (!"/".equals(path.substring(path.length()-1))) {
+            path += "/";
+        }
+
         // for each filename, check if it's a directory and if not, create and append TreeItem to represent it
         for (String filename : filenames) {
             if (!new File(path + filename).isDirectory()) {
@@ -305,7 +310,7 @@ public class Controller {
             // get the end index based on this format
             end = response.indexOf('"', start);
         }
-        System.out.println(start + " " + end);
+
         // return just the filename based on the start and end indexes found
         return response.substring(start, end);
     }
