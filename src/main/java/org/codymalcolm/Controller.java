@@ -118,7 +118,7 @@ public class Controller {
      */
     public void setup() {
         // set the text of the Label used to select the directory to the default
-        localDirectory.setText(initialLocalDirectory);
+        localDirectory.setText(initialLocalDirectory + "/");
 
         /* the preview container is initialized in main.fxml with both the previewPane and the
         previewInstructionsContainer, but we only want the previewInstructionsContainer for now, so remove the other */
@@ -161,11 +161,6 @@ public class Controller {
 
         // store the path to the directory
         String path = localDirectory.getText();
-
-        // if the "/" is missing (such as during startup), append it
-        if (!"/".equals(path.substring(path.length()-1))) {
-            path += "/";
-        }
 
         // for each filename, check if it's a directory and if not, create and append TreeItem to represent it
         for (String filename : filenames) {
