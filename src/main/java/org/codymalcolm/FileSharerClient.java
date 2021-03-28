@@ -476,7 +476,6 @@ public class FileSharerClient extends Application {
 
             // send the feedback to the controller
             controller.giveFeedback("", true);
-            System.out.println("boom");
 
             return true;
 

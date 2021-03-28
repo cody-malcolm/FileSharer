@@ -223,6 +223,9 @@ public class Controller {
         if (null != selectedFilename && localFile) {
             // request the upload
             client.requestUpload(selectedFilename, customFilename.getText());
+
+            // refresh the local directory in case of any file changes from other applications
+            refreshLocal(selectedFilename);
         } else {
             // provide relevant feedback
             if (null == selectedFilename) {
@@ -230,10 +233,9 @@ public class Controller {
             } else {
                 giveFeedback("To upload, you must select a local file.", false);
             }
+            // refresh the local directory in case of any file changes from other applications
+            refreshLocal();
         }
-
-        // refresh the local directory in case of any file changes from other applications
-        refreshLocal(selectedFilename);
     }
 
     /**
@@ -245,17 +247,22 @@ public class Controller {
         if (null != selectedFilename && serverFile) {
             // request the download
             client.requestDownload(selectedFilename, localDirectory.getText(), customFilename.getText());
+
+            // refresh the local directory in case of any file changes from other applications
+            refreshLocal();
         } else {
             // provide relevant feedback
             if (null == selectedFilename) {
                 giveFeedback("No file has been selected!", false);
+
+                refreshLocal();
             } else {
                 giveFeedback("To download, you must select a server file.", false);
+
+                refreshLocal(selectedFilename);
             }
         }
 
-        // refresh the local directory in case of any file changes from other applications
-        refreshLocal();
     }
 
     /**
