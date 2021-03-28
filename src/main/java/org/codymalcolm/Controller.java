@@ -159,9 +159,12 @@ public class Controller {
         // sort the list of filenames
         Arrays.sort(filenames);
 
+        // store the path to the directory
+        String path = localDirectory.getText();
+
         // for each filename, check if it's a directory and if not, create and append TreeItem to represent it
         for (String filename : filenames) {
-            if (!new File(filename).isDirectory()) {
+            if (!new File(path + filename).isDirectory()) {
                 TreeItem<String> entry = new TreeItem<>();
                 entry.setValue(filename);
                 localDirectoryName.getChildren().add(entry);
@@ -302,7 +305,7 @@ public class Controller {
             // get the end index based on this format
             end = response.indexOf('"', start);
         }
-
+        System.out.println(start + " " + end);
         // return just the filename based on the start and end indexes found
         return response.substring(start, end);
     }
