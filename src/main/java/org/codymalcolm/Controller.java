@@ -301,8 +301,18 @@ public class Controller {
         // clear any selected server files
         serverSelectionModel.clearSelection();
 
+        // get the TreeItem that is selected
+        TreeItem<String> selected = localSelectionModel.selectedItemProperty().getValue();
+
+        // if none, refresh TreeViews and exit
+        if (null == selected) {
+            client.requestDirectory();
+            refreshLocal();
+            return;
+        }
+
         // get the path of the file that was clicked on
-        String path = localDirectory.getText() + localSelectionModel.selectedItemProperty().getValue().getValue();
+        String path = localDirectory.getText() + selected.getValue();
 
         // create a File associated with the path
         File temp = new File(path);
@@ -375,8 +385,18 @@ public class Controller {
      * refreshing the local and server panes happen within those functions.
      */
     public void handleServerTreeClick() {
+        // get the TreeItem that is selected
+        TreeItem<String> selected = serverSelectionModel.selectedItemProperty().getValue();
+
+        // if none, refresh TreeViews and exit
+        if (null == selected) {
+            client.requestDirectory();
+            refreshLocal();
+            return;
+        }
+
         // update the filename field accordingly
-        selectedFilename = serverSelectionModel.selectedItemProperty().getValue().getValue();
+        selectedFilename = selected.getValue();
 
         // set the flags
         localFile = false;
