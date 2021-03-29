@@ -5,6 +5,7 @@
 package org.codymalcolm;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Fully static class to provide utility functions to multiple other classes in the Application.
@@ -32,11 +33,15 @@ class Utils {
             // initialize the iterator
             int i = 2;
 
-            // while a File with the current filename still exists, increment the iteration
-            while (temp.exists()) {
-                filename = incrementIteration(filename, i);
-                temp = new File(filename);
-                i++;
+            try {
+                // while a File with the current filename still exists, increment the iteration
+                while (!temp.createNewFile()) {
+                    filename = incrementIteration(filename, i);
+                    temp = new File(filename);
+                    i++;
+                }
+            } catch(IOException e) {
+                filename = "newfile.txt";
             }
         }
 
