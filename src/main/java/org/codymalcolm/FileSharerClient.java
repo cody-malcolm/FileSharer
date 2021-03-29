@@ -9,7 +9,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.List;
 
@@ -472,10 +474,13 @@ public class FileSharerClient extends Application {
      */
     private boolean establishConnection() {
         try {
-            // establish the connection
-            Socket socket = new Socket(hostname, port);
+            controller.giveFeedback("Attempting to connect, please wait...", true);
 
-            // initailize a Reader and Writer
+            // establish the connection, 2500ms timeout
+            Socket socket = new Socket();
+            socket.connect(new InetSocketAddress(hostname, port), 2500);
+
+            // initialize a Reader and Writer
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream());
 
