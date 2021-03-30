@@ -144,7 +144,8 @@ crucial that the user not click on any binary file types (such as images), or th
 
 ## Known Issues
 
-The program will crash and freeze if a binary file (such as an image file) is clicked on.
-This program should only be used with text-based files.
+Major: The program will crash and freeze if a binary file (such as an image file) is clicked on.
+This program should only be used with text-based files. A blacklist of some common file binary type file extensions 
+has been included, which should eliminate most accidental crashes for files which have accurate extensions.
 
-When displaying file previews, the client will display empty files as though no file is selected.
+Minor: When displaying file previews, the client will display empty files as though no file is selected.

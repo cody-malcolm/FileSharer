@@ -334,11 +334,22 @@ public class Controller {
 
             // initialize a StringBuilder for the file preview
             StringBuilder previewText = new StringBuilder();
+            if (Utils.detectBinary(selectedFilename)) {
+                // refresh both lists of TreeItems
+                client.requestDirectory();
+                refreshLocal(filename);
+
+                hardClear();
+
+                giveFeedback("Unfortunately, binary-based file formats are not supported.", false);
+                return;
+            }
+
             try {
                 // initialize a Reader for the file
                 BufferedReader reader = new BufferedReader(new FileReader(temp));
 
-                // initialze the String to store one line of text from the file
+                // initialize the String to store one line of text from the file
                 String line;
 
                 // read in each line of text
@@ -359,19 +370,33 @@ public class Controller {
             previewContainer.getChildren().remove(1);
             previewContainer.getChildren().add(previewPane);
         } else {
-            // the file must have been deleted by another application, so update fields accordingly
-            selectedFilename = null;
-            localFile = false;
-            serverFile = false;
-
-            // remove the second child of the preview container and replace it with the instructions container
-            previewContainer.getChildren().remove(1);
-            previewContainer.getChildren().add(previewInstructionsContainer);
+            hardClear();
         }
 
         // refresh both lists of TreeItems
         client.requestDirectory();
         refreshLocal(filename);
+    }
+
+    /**
+     * Sets the preview container to the instruction pane and clears all selections from the TreeViews.
+     */
+    private void hardClear() {
+        ObservableList<Node> children = previewContainer.getChildren();
+
+        // remove the second child of the preview container and replace it with the instructions container
+        while (children.size() > 1) {
+            previewContainer.getChildren().remove(1);
+        }
+        children.add(previewInstructionsContainer);
+
+        // the file must have been deleted by another application, so update fields accordingly
+        selectedFilename = null;
+        localFile = false;
+        serverFile = false;
+
+        serverSelectionModel.clearSelection();
+        localSelectionModel.clearSelection();
     }
 
     /**
@@ -407,6 +432,13 @@ public class Controller {
         if (previewNodes.size() > 1) {
             // remove the second child of the preview container's children
             previewNodes.remove(1);
+        }
+
+        System.out.println(Utils.detectBinary(selectedFilename));
+        if (Utils.detectBinary(selectedFilename)) {
+            hardClear();
+            giveFeedback("Unfortunately, binary-based file formats are not supported.", false);
+            return;
         }
 
         // request a preview of the selected file from the server

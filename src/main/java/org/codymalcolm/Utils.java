@@ -128,4 +128,41 @@ class Utils {
         }
         return 9001;
     }
+
+    /**
+     * Parses the extension of a filename and returns true if it matches know binary-format files that would cause
+     * the client to crash if parsing was attempted.
+     *
+     * Note: This method does not actually determine if the extension matches the file type. If a png format file is
+     * saved as "file.txt", this will return false, and the program will still crash. This is essentially just to
+     * prevent careless clicks or mis-clicks from causing program crashes.
+     *
+     * @param filename the filename to check
+     * @return true if the file has an extension that matches known binary file types
+     */
+    public static boolean detectBinary(String filename) {
+        int extensionStartsAt = filename.lastIndexOf('.');
+        if (extensionStartsAt == -1) {
+            return false;
+        }
+        String extension = filename.substring(extensionStartsAt);
+        int length = extension.length();
+
+        if (length < 2) {
+            return false;
+        }
+
+        extension = extension.substring(1);
+
+        String[] commonBinaryTypes = { "7a", "avi", "bin", "bmp", "deb", "doc", "docx", "exe", "gif", "gz", "ico",
+                "iso", "jar", "jpeg", "jpg", "mkv", "mp3", "mp4", "mpa", "mpg", "mpeg", "msi", "ods", "odt", "ogg",
+                "otf", "pdf", "pkg", "png", "ppt", "rar", "svg", "tif", "tiff", "ttf", "wmv", "xls", "zip" };
+
+        for (String ext : commonBinaryTypes) {
+            if (ext.equalsIgnoreCase(extension)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

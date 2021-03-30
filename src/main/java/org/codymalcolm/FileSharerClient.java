@@ -117,7 +117,7 @@ public class FileSharerClient extends Application {
             sendRequest("UPLOAD", filename, targetName);
 
             // process the response
-            processUploadResponse(filename);
+            processUploadResponse();
             processDirectoryResponse();
         }
     }
@@ -219,10 +219,8 @@ public class FileSharerClient extends Application {
 
     /**
      * Parses the server response to an upload request, and provides appropriate feedback to the user in case of error.
-     *
-     * @param filename the name of the file that was uploaded
      */
-    private void processUploadResponse(String filename) {
+    private void processUploadResponse() {
         try {
             // if success code
             if (in.readLine().equals("202")) {
