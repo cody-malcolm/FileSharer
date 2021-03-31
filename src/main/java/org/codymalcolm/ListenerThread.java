@@ -42,6 +42,7 @@ public class ListenerThread extends Thread {
      * closeSocket() method which closes the Socket - this interrupts the Socket's accept() method, the SocketException
      * is caught, and the loop ends (via closeSocket() updating the stopped flag).
      */
+    @Override
     public void run() {
         try {
             // initialize the flag and Socket

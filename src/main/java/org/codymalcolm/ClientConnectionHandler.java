@@ -95,6 +95,7 @@ public class ClientConnectionHandler implements Runnable {
      * This method is automatically invoked when the server Thread associated with "this" is started. It calls a handler
      * for the request, then closes the input and output Streams and the Socket.
      */
+    @Override
     public void run() {
         // call the helper to sort the request
         handleRequest();

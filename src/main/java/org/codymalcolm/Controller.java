@@ -434,7 +434,7 @@ public class Controller {
             previewNodes.remove(1);
         }
 
-        System.out.println(Utils.detectBinary(selectedFilename));
+        // guard against files with extensions suggesting binary types
         if (Utils.detectBinary(selectedFilename)) {
             hardClear();
             giveFeedback("Unfortunately, binary-based file formats are not supported.", false);
