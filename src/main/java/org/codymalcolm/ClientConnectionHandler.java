@@ -28,7 +28,7 @@ public class ClientConnectionHandler implements Runnable {
     final private String alias;
 
     /**
-     * Constructor for ClientConnectionHandler. Stores the given paramters, establishes the input and output streams
+     * Constructor for ClientConnectionHandler. Stores the given parameters, establishes the input and output streams
      * for the connection, stores the client's IP, and reads in the first line of the request (which is the alias)
      *
      * @param socket The clientSocket that has been accepted by the server

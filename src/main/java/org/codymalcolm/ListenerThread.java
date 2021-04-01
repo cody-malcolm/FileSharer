@@ -67,7 +67,6 @@ public class ListenerThread extends Thread {
                     thread.start();
                 } catch(SocketException e) {
                     // Happens when thread is interrupted. Do nothing.
-                    // TODO program crashes if connection not found over internet
                 }
             }
         } catch(IOException e) {
