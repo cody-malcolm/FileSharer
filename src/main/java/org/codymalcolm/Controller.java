@@ -498,7 +498,7 @@ public class Controller {
         DirectoryChooser directoryChooser = new DirectoryChooser();
 
         // set the initial directory to show the current selection
-        directoryChooser.setInitialDirectory(new File(new File(localDirectory.getText()).getParent()));
+        directoryChooser.setInitialDirectory(new File(localDirectory.getText()).getParentFile());
 
         // update the text of the directory Label to the new chosen directory
         File chosenDirectory = directoryChooser.showDialog(primaryStage);
