@@ -32,6 +32,7 @@ public class FileSharerClient extends Application {
     private Controller controller;
     /** The user-provided alias to use as ID for the server */
     private String alias;
+    private String initialLocalDirectory;
 
     /**
      * JavaFX main function
@@ -49,27 +50,7 @@ public class FileSharerClient extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-        // get the arguments the user provided
-        List<String> parameters = getParameters().getRaw();
-
-        // check how many arguments were provided
-        int numParams = parameters.size();
-
-        // if less than 2, print an error message to console and abort
-        if (numParams < 2) {
-            System.out.println("Note: Usage is 'gradle run --args=\"<alias> <local-directory>\"'. Aborting startup.");
-            System.exit(0);
-        }
-
-        // if a 3rd argument is provided, update the hostname with the 3rd argument
-        if (numParams >= 3) {
-            hostname = parameters.get(2);
-        }
-
-        // if a fourth argument is provided, update the port with the 4 argument if it can be parsed as an integer
-        if (numParams > 3) {
-            port = Utils.parsePort(parameters.get(3));
-        }
+        processParameters();
 
         // get the loader
         FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
@@ -88,18 +69,44 @@ public class FileSharerClient extends Application {
             // set the fields the controller needs
             controller.setPrimaryStage(primaryStage);
             controller.setClient(this);
-            controller.setInitialLocalDirectory(parameters.get(1));
+            controller.setInitialLocalDirectory(initialLocalDirectory);
 
             // set up the controller
             controller.setup();
 
-            // set the alias
-            alias = parameters.get(0);
 
             // request the files in the shared folder from the server
             requestDirectory();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void processParameters() {
+        // get the arguments the user provided
+        List<String> parameters = getParameters().getRaw();
+
+        // check how many arguments were provided
+        int numParams = parameters.size();
+
+        // if less than 2, print an error message to console and abort
+        if (numParams < 2) {
+            System.out.println("Note: Usage is 'gradle run --args=\"<alias> <local-directory>\"'. Aborting startup.");
+            System.exit(0);
+        }
+
+        // set the alias
+        alias = parameters.get(0);
+        initialLocalDirectory = parameters.get(1);
+
+        // if a 3rd argument is provided, update the hostname with the 3rd argument
+        if (numParams >= 3) {
+            hostname = parameters.get(2);
+        }
+
+        // if a fourth argument is provided, update the port with the 4 argument if it can be parsed as an integer
+        if (numParams > 3) {
+            port = Utils.parsePort(parameters.get(3));
         }
     }
 
