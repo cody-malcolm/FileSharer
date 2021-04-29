@@ -388,6 +388,11 @@ public class Controller {
         fileSelected = true;
     }
 
+    private void clearAllSelections() {
+        serverSelectionModel.clearSelection();
+        localSelectionModel.clearSelection();
+    }
+
     /**
      * Sets the preview container to the instruction pane and clears all selections from the TreeViews.
      */
@@ -403,9 +408,7 @@ public class Controller {
         // the file must have been deleted by another application, so update fields accordingly
         selectedFilename = null;
         fileSelected = false;
-
-        serverSelectionModel.clearSelection();
-        localSelectionModel.clearSelection();
+        clearAllSelections();
     }
 
     /**
@@ -526,9 +529,7 @@ public class Controller {
      * @param filename the filename we want to highlight
      */
     public void highlightServerFile(String filename) {
-        // clear an existing selections from both panes
-        localSelectionModel.clearSelection();
-        serverSelectionModel.clearSelection();
+        clearAllSelections();
 
         // check each child of the "root" server TreeItem and select it if its value matches the filename
         serverDirectoryName.getChildren().forEach(stringTreeItem -> {
