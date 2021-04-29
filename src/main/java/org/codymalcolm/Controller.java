@@ -62,10 +62,10 @@ public class Controller {
     private FileSharerClient client;
     /** the currently selected filename */
     private String selectedFilename;
-    /** a flag to indicate if the current selected filename belongs to the local directory */
-    private boolean localFile = false;
-    /** a flag to indicate if the current selected filename belongs to the shared directory */
-    private boolean serverFile = false;
+    /** a flag to indicate if the current selected file belongs to the local directory or the server directory */
+    private boolean isLocal = true;
+    /** a flag to indicate if there is a currently selected file */
+    private boolean fileSelected = false;
     /** the Stage to display content on (used with the DirectoryChooser) */
     private Stage primaryStage;
     /** a SelectionModel to facilitate selection of the correct local TreeItems */
@@ -220,7 +220,7 @@ public class Controller {
      */
     public void upload() {
         // if a file is selected from the local file pane
-        if (null != selectedFilename && localFile) {
+        if (fileSelected && isLocal) {
             // request the upload
             client.requestUpload(selectedFilename, customFilename.getText());
 
@@ -228,7 +228,7 @@ public class Controller {
             refreshLocal(selectedFilename);
         } else {
             // provide relevant feedback
-            if (null == selectedFilename) {
+            if (!fileSelected) {
                 giveFeedback("No file has been selected!", false);
             } else {
                 giveFeedback("To upload, you must select a local file.", false);
@@ -244,7 +244,7 @@ public class Controller {
      */
     public void download() {
         // if a file is selected from the server file pane
-        if (null != selectedFilename && serverFile) {
+        if (fileSelected && !isLocal) {
             // request the download
             client.requestDownload(selectedFilename, localDirectory.getText(), customFilename.getText());
 
@@ -252,7 +252,7 @@ public class Controller {
             refreshLocal();
         } else {
             // provide relevant feedback
-            if (null == selectedFilename) {
+            if (!fileSelected) {
                 giveFeedback("No file has been selected!", false);
 
                 refreshLocal();
@@ -271,12 +271,12 @@ public class Controller {
      */
     public void delete() {
         // if a file is selected from the server file pane
-        if (null != selectedFilename && serverFile) {
+        if (fileSelected && !isLocal) {
             // request the deletion
             client.requestDelete(selectedFilename);
         } else {
             // provide relevant feedback
-            if (null == selectedFilename) {
+            if (!fileSelected) {
                 giveFeedback("No file has been selected!", false);
             } else {
                 giveFeedback("To delete a local file, use your OS file manager.", false);
@@ -326,8 +326,7 @@ public class Controller {
             selectedFilename = path;
 
             // update the flags associated with which pane is "active"
-            localFile = true;
-            serverFile = false;
+            enableLocalFlag();
 
             // store the name of the selected file
             filename = temp.getName();
@@ -378,6 +377,17 @@ public class Controller {
         refreshLocal(filename);
     }
 
+    // two methods instead of one for ease-of-use, of course it could be one method with a boolean param
+    private void enableLocalFlag() {
+        isLocal = true;
+        fileSelected = true;
+    }
+
+    private void enableServerFlag() {
+        isLocal = false;
+        fileSelected = true;
+    }
+
     /**
      * Sets the preview container to the instruction pane and clears all selections from the TreeViews.
      */
@@ -392,8 +402,7 @@ public class Controller {
 
         // the file must have been deleted by another application, so update fields accordingly
         selectedFilename = null;
-        localFile = false;
-        serverFile = false;
+        fileSelected = false;
 
         serverSelectionModel.clearSelection();
         localSelectionModel.clearSelection();
@@ -424,8 +433,7 @@ public class Controller {
         selectedFilename = selected.getValue();
 
         // set the flags
-        localFile = false;
-        serverFile = true;
+        enableServerFlag();
 
         // guard is to deal with an edge case
         ObservableList<Node> previewNodes = previewContainer.getChildren();
